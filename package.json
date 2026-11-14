@@ -21,10 +21,15 @@
   "packageManager": "pnpm@12.18.0",
   "type": "module",
   "dependencies": {
-    "fastify": "^5.12.8"
+    "dotenv": "^18.0.10",
+    "drizzle-orm": "1.0.0-rc.5",
+    "fastify": "^5.12.8",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "1.0.0-rc.5",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }
