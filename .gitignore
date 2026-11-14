@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# TypeScript build output
+dist/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+pnpm-debug.log*
+
+# OS & Editor files
+.DS_Store
+.vscode/
+
