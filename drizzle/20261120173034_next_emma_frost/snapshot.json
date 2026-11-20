@@ -1,0 +1,4310 @@
+{
+  "type": "base",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "0111ba7a-ebe8-4e6c-9148-9e90b0aae292",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "document_revision_status"
+      ],
+      "writes": [
+        "s|enum|public.document_revision_status",
+        "n|enum|public.document_revision_status",
+        "e|enum|public.document_revision_status",
+        "n|type|public.document_revision_status"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": [
+        "enum",
+        "public",
+        "document_status"
+      ],
+      "writes": [
+        "s|enum|public.document_status",
+        "n|enum|public.document_status",
+        "e|enum|public.document_status",
+        "n|type|public.document_status"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "activity_logs"
+      ],
+      "writes": [
+        "s|tbl|public.activity_logs",
+        "n|tbl|public.activity_logs",
+        "e|tbl|public.activity_logs",
+        "n|rel|public.activity_logs",
+        "n|type|public.activity_logs",
+        "n|rel|public.activity_logs_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "auth_logs"
+      ],
+      "writes": [
+        "s|tbl|public.auth_logs",
+        "n|tbl|public.auth_logs",
+        "e|tbl|public.auth_logs",
+        "n|rel|public.auth_logs",
+        "n|type|public.auth_logs",
+        "n|rel|public.auth_logs_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_financial_values"
+      ],
+      "writes": [
+        "s|tbl|public.document_financial_values",
+        "n|tbl|public.document_financial_values",
+        "e|tbl|public.document_financial_values",
+        "n|rel|public.document_financial_values",
+        "n|type|public.document_financial_values",
+        "n|rel|public.document_financial_values_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_revision_signatories"
+      ],
+      "writes": [
+        "s|tbl|public.document_revision_signatories",
+        "n|tbl|public.document_revision_signatories",
+        "e|tbl|public.document_revision_signatories",
+        "n|rel|public.document_revision_signatories",
+        "n|type|public.document_revision_signatories",
+        "n|rel|public.document_revision_signatories_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_revisions"
+      ],
+      "writes": [
+        "s|tbl|public.document_revisions",
+        "n|tbl|public.document_revisions",
+        "e|tbl|public.document_revisions",
+        "n|rel|public.document_revisions",
+        "n|type|public.document_revisions",
+        "n|rel|public.document_revisions_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.document_revision_status"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_templates"
+      ],
+      "writes": [
+        "s|tbl|public.document_templates",
+        "n|tbl|public.document_templates",
+        "e|tbl|public.document_templates",
+        "n|rel|public.document_templates",
+        "n|type|public.document_templates",
+        "n|rel|public.document_templates_pkey",
+        "n|rel|public.document_templates_resource_key_key"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_types"
+      ],
+      "writes": [
+        "s|tbl|public.document_types",
+        "n|tbl|public.document_types",
+        "e|tbl|public.document_types",
+        "n|rel|public.document_types",
+        "n|type|public.document_types",
+        "n|rel|public.document_types_pkey",
+        "n|rel|public.document_types_code_key"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "documents"
+      ],
+      "writes": [
+        "s|tbl|public.documents",
+        "n|tbl|public.documents",
+        "e|tbl|public.documents",
+        "n|rel|public.documents",
+        "n|type|public.documents",
+        "n|rel|public.documents_pkey"
+      ],
+      "reads": [
+        "n|sch|public",
+        "n|enum|public.document_status"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "offices"
+      ],
+      "writes": [
+        "s|tbl|public.offices",
+        "n|tbl|public.offices",
+        "e|tbl|public.offices",
+        "n|rel|public.offices",
+        "n|type|public.offices",
+        "n|rel|public.offices_pkey",
+        "n|rel|public.offices_code_key"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "permissions"
+      ],
+      "writes": [
+        "s|tbl|public.permissions",
+        "n|tbl|public.permissions",
+        "e|tbl|public.permissions",
+        "n|rel|public.permissions",
+        "n|type|public.permissions",
+        "n|rel|public.permissions_pkey",
+        "n|rel|public.permissions_name_key"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_document_type_permissions"
+      ],
+      "writes": [
+        "s|tbl|public.role_document_type_permissions",
+        "n|tbl|public.role_document_type_permissions",
+        "e|tbl|public.role_document_type_permissions",
+        "n|rel|public.role_document_type_permissions",
+        "n|type|public.role_document_type_permissions",
+        "n|rel|public.role_document_type_permissions_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_permissions"
+      ],
+      "writes": [
+        "s|tbl|public.role_permissions",
+        "n|tbl|public.role_permissions",
+        "e|tbl|public.role_permissions",
+        "n|rel|public.role_permissions",
+        "n|type|public.role_permissions",
+        "n|rel|public.role_permissions_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "roles"
+      ],
+      "writes": [
+        "s|tbl|public.roles",
+        "n|tbl|public.roles",
+        "e|tbl|public.roles",
+        "n|rel|public.roles",
+        "n|type|public.roles",
+        "n|rel|public.roles_pkey",
+        "n|rel|public.roles_name_key"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "signatories"
+      ],
+      "writes": [
+        "s|tbl|public.signatories",
+        "n|tbl|public.signatories",
+        "e|tbl|public.signatories",
+        "n|rel|public.signatories",
+        "n|type|public.signatories",
+        "n|rel|public.signatories_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "template_versions"
+      ],
+      "writes": [
+        "s|tbl|public.template_versions",
+        "n|tbl|public.template_versions",
+        "e|tbl|public.template_versions",
+        "n|rel|public.template_versions",
+        "n|type|public.template_versions",
+        "n|rel|public.template_versions_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "user_roles"
+      ],
+      "writes": [
+        "s|tbl|public.user_roles",
+        "n|tbl|public.user_roles",
+        "e|tbl|public.user_roles",
+        "n|rel|public.user_roles",
+        "n|type|public.user_roles",
+        "n|rel|public.user_roles_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "users"
+      ],
+      "writes": [
+        "s|tbl|public.users",
+        "n|tbl|public.users",
+        "e|tbl|public.users",
+        "n|rel|public.users",
+        "n|type|public.users",
+        "n|rel|public.users_pkey",
+        "n|rel|public.users_email_key"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "activity_logs",
+        "activity_logs_entity_idx"
+      ],
+      "writes": [
+        "s|idx|public.activity_logs_entity_idx",
+        "n|idx|public.activity_logs_entity_idx",
+        "e|idx|public.activity_logs_entity_idx",
+        "n|rel|public.activity_logs_entity_idx"
+      ],
+      "reads": [
+        "n|tbl|public.activity_logs",
+        "n|sch|public",
+        "n|col|public.activity_logs.entity_type",
+        "n|col|public.activity_logs.entity_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "activity_logs",
+        "activity_logs_actor_idx"
+      ],
+      "writes": [
+        "s|idx|public.activity_logs_actor_idx",
+        "n|idx|public.activity_logs_actor_idx",
+        "e|idx|public.activity_logs_actor_idx",
+        "n|rel|public.activity_logs_actor_idx"
+      ],
+      "reads": [
+        "n|tbl|public.activity_logs",
+        "n|sch|public",
+        "n|col|public.activity_logs.actor_user_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "activity_logs",
+        "activity_logs_created_at_idx"
+      ],
+      "writes": [
+        "s|idx|public.activity_logs_created_at_idx",
+        "n|idx|public.activity_logs_created_at_idx",
+        "e|idx|public.activity_logs_created_at_idx",
+        "n|rel|public.activity_logs_created_at_idx"
+      ],
+      "reads": [
+        "n|tbl|public.activity_logs",
+        "n|sch|public",
+        "n|col|public.activity_logs.created_at"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "auth_logs",
+        "auth_logs_user_idx"
+      ],
+      "writes": [
+        "s|idx|public.auth_logs_user_idx",
+        "n|idx|public.auth_logs_user_idx",
+        "e|idx|public.auth_logs_user_idx",
+        "n|rel|public.auth_logs_user_idx"
+      ],
+      "reads": [
+        "n|tbl|public.auth_logs",
+        "n|sch|public",
+        "n|col|public.auth_logs.user_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "auth_logs",
+        "auth_logs_created_at_idx"
+      ],
+      "writes": [
+        "s|idx|public.auth_logs_created_at_idx",
+        "n|idx|public.auth_logs_created_at_idx",
+        "e|idx|public.auth_logs_created_at_idx",
+        "n|rel|public.auth_logs_created_at_idx"
+      ],
+      "reads": [
+        "n|tbl|public.auth_logs",
+        "n|sch|public",
+        "n|col|public.auth_logs.created_at"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "document_financial_values",
+        "document_financial_values_path_uq"
+      ],
+      "writes": [
+        "s|idx|public.document_financial_values_path_uq",
+        "n|idx|public.document_financial_values_path_uq",
+        "e|idx|public.document_financial_values_path_uq",
+        "n|rel|public.document_financial_values_path_uq"
+      ],
+      "reads": [
+        "n|tbl|public.document_financial_values",
+        "n|sch|public",
+        "n|col|public.document_financial_values.revision_id",
+        "n|col|public.document_financial_values.field_path"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "document_financial_values",
+        "document_financial_values_office_metric_year_idx"
+      ],
+      "writes": [
+        "s|idx|public.document_financial_values_office_metric_year_idx",
+        "n|idx|public.document_financial_values_office_metric_year_idx",
+        "e|idx|public.document_financial_values_office_metric_year_idx",
+        "n|rel|public.document_financial_values_office_metric_year_idx"
+      ],
+      "reads": [
+        "n|tbl|public.document_financial_values",
+        "n|sch|public",
+        "n|col|public.document_financial_values.office_id",
+        "n|col|public.document_financial_values.metric_key",
+        "n|col|public.document_financial_values.fiscal_year"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "document_financial_values",
+        "document_financial_values_account_idx"
+      ],
+      "writes": [
+        "s|idx|public.document_financial_values_account_idx",
+        "n|idx|public.document_financial_values_account_idx",
+        "e|idx|public.document_financial_values_account_idx",
+        "n|rel|public.document_financial_values_account_idx"
+      ],
+      "reads": [
+        "n|tbl|public.document_financial_values",
+        "n|sch|public",
+        "n|col|public.document_financial_values.account_code"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "document_revision_signatories",
+        "document_revision_signatory_slot_uq"
+      ],
+      "writes": [
+        "s|idx|public.document_revision_signatory_slot_uq",
+        "n|idx|public.document_revision_signatory_slot_uq",
+        "e|idx|public.document_revision_signatory_slot_uq",
+        "n|rel|public.document_revision_signatory_slot_uq"
+      ],
+      "reads": [
+        "n|tbl|public.document_revision_signatories",
+        "n|sch|public",
+        "n|col|public.document_revision_signatories.revision_id",
+        "n|col|public.document_revision_signatories.slot_key"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "document_revision_signatories",
+        "document_revision_signatory_person_idx"
+      ],
+      "writes": [
+        "s|idx|public.document_revision_signatory_person_idx",
+        "n|idx|public.document_revision_signatory_person_idx",
+        "e|idx|public.document_revision_signatory_person_idx",
+        "n|rel|public.document_revision_signatory_person_idx"
+      ],
+      "reads": [
+        "n|tbl|public.document_revision_signatories",
+        "n|sch|public",
+        "n|col|public.document_revision_signatories.signatory_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "document_revisions",
+        "document_revisions_document_revision_uq"
+      ],
+      "writes": [
+        "s|idx|public.document_revisions_document_revision_uq",
+        "n|idx|public.document_revisions_document_revision_uq",
+        "e|idx|public.document_revisions_document_revision_uq",
+        "n|rel|public.document_revisions_document_revision_uq"
+      ],
+      "reads": [
+        "n|tbl|public.document_revisions",
+        "n|sch|public",
+        "n|col|public.document_revisions.document_id",
+        "n|col|public.document_revisions.revision_number"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "document_revisions",
+        "document_revisions_template_version_idx"
+      ],
+      "writes": [
+        "s|idx|public.document_revisions_template_version_idx",
+        "n|idx|public.document_revisions_template_version_idx",
+        "e|idx|public.document_revisions_template_version_idx",
+        "n|rel|public.document_revisions_template_version_idx"
+      ],
+      "reads": [
+        "n|tbl|public.document_revisions",
+        "n|sch|public",
+        "n|col|public.document_revisions.template_version_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "document_revisions",
+        "document_revisions_author_idx"
+      ],
+      "writes": [
+        "s|idx|public.document_revisions_author_idx",
+        "n|idx|public.document_revisions_author_idx",
+        "e|idx|public.document_revisions_author_idx",
+        "n|rel|public.document_revisions_author_idx"
+      ],
+      "reads": [
+        "n|tbl|public.document_revisions",
+        "n|sch|public",
+        "n|col|public.document_revisions.created_by"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "document_templates",
+        "document_templates_type_idx"
+      ],
+      "writes": [
+        "s|idx|public.document_templates_type_idx",
+        "n|idx|public.document_templates_type_idx",
+        "e|idx|public.document_templates_type_idx",
+        "n|rel|public.document_templates_type_idx"
+      ],
+      "reads": [
+        "n|tbl|public.document_templates",
+        "n|sch|public",
+        "n|col|public.document_templates.document_type_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "documents",
+        "documents_template_idx"
+      ],
+      "writes": [
+        "s|idx|public.documents_template_idx",
+        "n|idx|public.documents_template_idx",
+        "e|idx|public.documents_template_idx",
+        "n|rel|public.documents_template_idx"
+      ],
+      "reads": [
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|col|public.documents.template_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "documents",
+        "documents_created_by_idx"
+      ],
+      "writes": [
+        "s|idx|public.documents_created_by_idx",
+        "n|idx|public.documents_created_by_idx",
+        "e|idx|public.documents_created_by_idx",
+        "n|rel|public.documents_created_by_idx"
+      ],
+      "reads": [
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|col|public.documents.created_by"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "documents",
+        "documents_office_year_idx"
+      ],
+      "writes": [
+        "s|idx|public.documents_office_year_idx",
+        "n|idx|public.documents_office_year_idx",
+        "e|idx|public.documents_office_year_idx",
+        "n|rel|public.documents_office_year_idx"
+      ],
+      "reads": [
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|col|public.documents.managing_office_id",
+        "n|col|public.documents.fiscal_year"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "documents",
+        "documents_status_idx"
+      ],
+      "writes": [
+        "s|idx|public.documents_status_idx",
+        "n|idx|public.documents_status_idx",
+        "e|idx|public.documents_status_idx",
+        "n|rel|public.documents_status_idx"
+      ],
+      "reads": [
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|col|public.documents.status"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "role_document_type_permissions",
+        "role_doc_type_perm_type_idx"
+      ],
+      "writes": [
+        "s|idx|public.role_doc_type_perm_type_idx",
+        "n|idx|public.role_doc_type_perm_type_idx",
+        "e|idx|public.role_doc_type_perm_type_idx",
+        "n|rel|public.role_doc_type_perm_type_idx"
+      ],
+      "reads": [
+        "n|tbl|public.role_document_type_permissions",
+        "n|sch|public",
+        "n|col|public.role_document_type_permissions.document_type_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "role_document_type_permissions",
+        "role_doc_type_perm_permission_idx"
+      ],
+      "writes": [
+        "s|idx|public.role_doc_type_perm_permission_idx",
+        "n|idx|public.role_doc_type_perm_permission_idx",
+        "e|idx|public.role_doc_type_perm_permission_idx",
+        "n|rel|public.role_doc_type_perm_permission_idx"
+      ],
+      "reads": [
+        "n|tbl|public.role_document_type_permissions",
+        "n|sch|public",
+        "n|col|public.role_document_type_permissions.permission_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "role_permissions",
+        "role_permissions_permission_id_idx"
+      ],
+      "writes": [
+        "s|idx|public.role_permissions_permission_id_idx",
+        "n|idx|public.role_permissions_permission_id_idx",
+        "e|idx|public.role_permissions_permission_id_idx",
+        "n|rel|public.role_permissions_permission_id_idx"
+      ],
+      "reads": [
+        "n|tbl|public.role_permissions",
+        "n|sch|public",
+        "n|col|public.role_permissions.permission_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "signatories",
+        "signatories_office_idx"
+      ],
+      "writes": [
+        "s|idx|public.signatories_office_idx",
+        "n|idx|public.signatories_office_idx",
+        "e|idx|public.signatories_office_idx",
+        "n|rel|public.signatories_office_idx"
+      ],
+      "reads": [
+        "n|tbl|public.signatories",
+        "n|sch|public",
+        "n|col|public.signatories.office_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "template_versions",
+        "template_versions_template_version_uq"
+      ],
+      "writes": [
+        "s|idx|public.template_versions_template_version_uq",
+        "n|idx|public.template_versions_template_version_uq",
+        "e|idx|public.template_versions_template_version_uq",
+        "n|rel|public.template_versions_template_version_uq"
+      ],
+      "reads": [
+        "n|tbl|public.template_versions",
+        "n|sch|public",
+        "n|col|public.template_versions.template_id",
+        "n|col|public.template_versions.version_number"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "user_roles",
+        "user_roles_role_id_idx"
+      ],
+      "writes": [
+        "s|idx|public.user_roles_role_id_idx",
+        "n|idx|public.user_roles_role_id_idx",
+        "e|idx|public.user_roles_role_id_idx",
+        "n|rel|public.user_roles_role_id_idx"
+      ],
+      "reads": [
+        "n|tbl|public.user_roles",
+        "n|sch|public",
+        "n|col|public.user_roles.role_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "users",
+        "users_office_id_idx"
+      ],
+      "writes": [
+        "s|idx|public.users_office_id_idx",
+        "n|idx|public.users_office_id_idx",
+        "e|idx|public.users_office_id_idx",
+        "n|rel|public.users_office_id_idx"
+      ],
+      "reads": [
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.users.office_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "activity_logs"
+      ],
+      "writes": [
+        "s|fk|public.activity_logs.activity_logs_actor_user_id_users_id_fkey",
+        "n|fk|public.activity_logs.activity_logs_actor_user_id_users_id_fkey",
+        "e|fk|public.activity_logs.activity_logs_actor_user_id_users_id_fkey",
+        "n|con|public.activity_logs.activity_logs_actor_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.activity_logs",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.activity_logs.actor_user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "auth_logs"
+      ],
+      "writes": [
+        "s|fk|public.auth_logs.auth_logs_user_id_users_id_fkey",
+        "n|fk|public.auth_logs.auth_logs_user_id_users_id_fkey",
+        "e|fk|public.auth_logs.auth_logs_user_id_users_id_fkey",
+        "n|con|public.auth_logs.auth_logs_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.auth_logs",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.auth_logs.user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_financial_values"
+      ],
+      "writes": [
+        "s|fk|public.document_financial_values.document_financial_values_0xcP7bxIU26l_fkey",
+        "n|fk|public.document_financial_values.document_financial_values_0xcP7bxIU26l_fkey",
+        "e|fk|public.document_financial_values.document_financial_values_0xcP7bxIU26l_fkey",
+        "n|con|public.document_financial_values.document_financial_values_0xcP7bxIU26l_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.document_financial_values",
+        "n|sch|public",
+        "n|tbl|public.document_revisions",
+        "n|sch|public",
+        "n|col|public.document_financial_values.revision_id",
+        "n|col|public.document_revisions.id",
+        "e|uniqueness|public.document_revisions.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_financial_values"
+      ],
+      "writes": [
+        "s|fk|public.document_financial_values.document_financial_values_office_id_offices_id_fkey",
+        "n|fk|public.document_financial_values.document_financial_values_office_id_offices_id_fkey",
+        "e|fk|public.document_financial_values.document_financial_values_office_id_offices_id_fkey",
+        "n|con|public.document_financial_values.document_financial_values_office_id_offices_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.document_financial_values",
+        "n|sch|public",
+        "n|tbl|public.offices",
+        "n|sch|public",
+        "n|col|public.document_financial_values.office_id",
+        "n|col|public.offices.id",
+        "e|uniqueness|public.offices.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_revision_signatories"
+      ],
+      "writes": [
+        "s|fk|public.document_revision_signatories.document_revision_signatories_2z5Kk7d8wLZl_fkey",
+        "n|fk|public.document_revision_signatories.document_revision_signatories_2z5Kk7d8wLZl_fkey",
+        "e|fk|public.document_revision_signatories.document_revision_signatories_2z5Kk7d8wLZl_fkey",
+        "n|con|public.document_revision_signatories.document_revision_signatories_2z5Kk7d8wLZl_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.document_revision_signatories",
+        "n|sch|public",
+        "n|tbl|public.document_revisions",
+        "n|sch|public",
+        "n|col|public.document_revision_signatories.revision_id",
+        "n|col|public.document_revisions.id",
+        "e|uniqueness|public.document_revisions.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_revision_signatories"
+      ],
+      "writes": [
+        "s|fk|public.document_revision_signatories.document_revision_signatories_signatory_id_signatories_id_fkey",
+        "n|fk|public.document_revision_signatories.document_revision_signatories_signatory_id_signatories_id_fkey",
+        "e|fk|public.document_revision_signatories.document_revision_signatories_signatory_id_signatories_id_fkey",
+        "n|con|public.document_revision_signatories.document_revision_signatories_signatory_id_signatories_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.document_revision_signatories",
+        "n|sch|public",
+        "n|tbl|public.signatories",
+        "n|sch|public",
+        "n|col|public.document_revision_signatories.signatory_id",
+        "n|col|public.signatories.id",
+        "e|uniqueness|public.signatories.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_revisions"
+      ],
+      "writes": [
+        "s|fk|public.document_revisions.document_revisions_document_id_documents_id_fkey",
+        "n|fk|public.document_revisions.document_revisions_document_id_documents_id_fkey",
+        "e|fk|public.document_revisions.document_revisions_document_id_documents_id_fkey",
+        "n|con|public.document_revisions.document_revisions_document_id_documents_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.document_revisions",
+        "n|sch|public",
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|col|public.document_revisions.document_id",
+        "n|col|public.documents.id",
+        "e|uniqueness|public.documents.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_revisions"
+      ],
+      "writes": [
+        "s|fk|public.document_revisions.document_revisions_59nhiy0IRSIp_fkey",
+        "n|fk|public.document_revisions.document_revisions_59nhiy0IRSIp_fkey",
+        "e|fk|public.document_revisions.document_revisions_59nhiy0IRSIp_fkey",
+        "n|con|public.document_revisions.document_revisions_59nhiy0IRSIp_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.document_revisions",
+        "n|sch|public",
+        "n|tbl|public.template_versions",
+        "n|sch|public",
+        "n|col|public.document_revisions.template_version_id",
+        "n|col|public.template_versions.id",
+        "e|uniqueness|public.template_versions.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_revisions"
+      ],
+      "writes": [
+        "s|fk|public.document_revisions.document_revisions_created_by_users_id_fkey",
+        "n|fk|public.document_revisions.document_revisions_created_by_users_id_fkey",
+        "e|fk|public.document_revisions.document_revisions_created_by_users_id_fkey",
+        "n|con|public.document_revisions.document_revisions_created_by_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.document_revisions",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.document_revisions.created_by",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "document_templates"
+      ],
+      "writes": [
+        "s|fk|public.document_templates.document_templates_document_type_id_document_types_id_fkey",
+        "n|fk|public.document_templates.document_templates_document_type_id_document_types_id_fkey",
+        "e|fk|public.document_templates.document_templates_document_type_id_document_types_id_fkey",
+        "n|con|public.document_templates.document_templates_document_type_id_document_types_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.document_templates",
+        "n|sch|public",
+        "n|tbl|public.document_types",
+        "n|sch|public",
+        "n|col|public.document_templates.document_type_id",
+        "n|col|public.document_types.id",
+        "e|uniqueness|public.document_types.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "documents"
+      ],
+      "writes": [
+        "s|fk|public.documents.documents_template_id_document_templates_id_fkey",
+        "n|fk|public.documents.documents_template_id_document_templates_id_fkey",
+        "e|fk|public.documents.documents_template_id_document_templates_id_fkey",
+        "n|con|public.documents.documents_template_id_document_templates_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|tbl|public.document_templates",
+        "n|sch|public",
+        "n|col|public.documents.template_id",
+        "n|col|public.document_templates.id",
+        "e|uniqueness|public.document_templates.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "documents"
+      ],
+      "writes": [
+        "s|fk|public.documents.documents_created_by_users_id_fkey",
+        "n|fk|public.documents.documents_created_by_users_id_fkey",
+        "e|fk|public.documents.documents_created_by_users_id_fkey",
+        "n|con|public.documents.documents_created_by_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.documents.created_by",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "documents"
+      ],
+      "writes": [
+        "s|fk|public.documents.documents_managing_office_id_offices_id_fkey",
+        "n|fk|public.documents.documents_managing_office_id_offices_id_fkey",
+        "e|fk|public.documents.documents_managing_office_id_offices_id_fkey",
+        "n|con|public.documents.documents_managing_office_id_offices_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|tbl|public.offices",
+        "n|sch|public",
+        "n|col|public.documents.managing_office_id",
+        "n|col|public.offices.id",
+        "e|uniqueness|public.offices.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_document_type_permissions"
+      ],
+      "writes": [
+        "s|fk|public.role_document_type_permissions.role_document_type_permissions_role_id_roles_id_fkey",
+        "n|fk|public.role_document_type_permissions.role_document_type_permissions_role_id_roles_id_fkey",
+        "e|fk|public.role_document_type_permissions.role_document_type_permissions_role_id_roles_id_fkey",
+        "n|con|public.role_document_type_permissions.role_document_type_permissions_role_id_roles_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.role_document_type_permissions",
+        "n|sch|public",
+        "n|tbl|public.roles",
+        "n|sch|public",
+        "n|col|public.role_document_type_permissions.role_id",
+        "n|col|public.roles.id",
+        "e|uniqueness|public.roles.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_document_type_permissions"
+      ],
+      "writes": [
+        "s|fk|public.role_document_type_permissions.role_document_type_permissions_PqPdautRUeOn_fkey",
+        "n|fk|public.role_document_type_permissions.role_document_type_permissions_PqPdautRUeOn_fkey",
+        "e|fk|public.role_document_type_permissions.role_document_type_permissions_PqPdautRUeOn_fkey",
+        "n|con|public.role_document_type_permissions.role_document_type_permissions_PqPdautRUeOn_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.role_document_type_permissions",
+        "n|sch|public",
+        "n|tbl|public.document_types",
+        "n|sch|public",
+        "n|col|public.role_document_type_permissions.document_type_id",
+        "n|col|public.document_types.id",
+        "e|uniqueness|public.document_types.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_document_type_permissions"
+      ],
+      "writes": [
+        "s|fk|public.role_document_type_permissions.role_document_type_permissions_XR7m9pnpSjLb_fkey",
+        "n|fk|public.role_document_type_permissions.role_document_type_permissions_XR7m9pnpSjLb_fkey",
+        "e|fk|public.role_document_type_permissions.role_document_type_permissions_XR7m9pnpSjLb_fkey",
+        "n|con|public.role_document_type_permissions.role_document_type_permissions_XR7m9pnpSjLb_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.role_document_type_permissions",
+        "n|sch|public",
+        "n|tbl|public.permissions",
+        "n|sch|public",
+        "n|col|public.role_document_type_permissions.permission_id",
+        "n|col|public.permissions.id",
+        "e|uniqueness|public.permissions.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_permissions"
+      ],
+      "writes": [
+        "s|fk|public.role_permissions.role_permissions_role_id_roles_id_fkey",
+        "n|fk|public.role_permissions.role_permissions_role_id_roles_id_fkey",
+        "e|fk|public.role_permissions.role_permissions_role_id_roles_id_fkey",
+        "n|con|public.role_permissions.role_permissions_role_id_roles_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.role_permissions",
+        "n|sch|public",
+        "n|tbl|public.roles",
+        "n|sch|public",
+        "n|col|public.role_permissions.role_id",
+        "n|col|public.roles.id",
+        "e|uniqueness|public.roles.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "role_permissions"
+      ],
+      "writes": [
+        "s|fk|public.role_permissions.role_permissions_permission_id_permissions_id_fkey",
+        "n|fk|public.role_permissions.role_permissions_permission_id_permissions_id_fkey",
+        "e|fk|public.role_permissions.role_permissions_permission_id_permissions_id_fkey",
+        "n|con|public.role_permissions.role_permissions_permission_id_permissions_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.role_permissions",
+        "n|sch|public",
+        "n|tbl|public.permissions",
+        "n|sch|public",
+        "n|col|public.role_permissions.permission_id",
+        "n|col|public.permissions.id",
+        "e|uniqueness|public.permissions.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "signatories"
+      ],
+      "writes": [
+        "s|fk|public.signatories.signatories_office_id_offices_id_fkey",
+        "n|fk|public.signatories.signatories_office_id_offices_id_fkey",
+        "e|fk|public.signatories.signatories_office_id_offices_id_fkey",
+        "n|con|public.signatories.signatories_office_id_offices_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.signatories",
+        "n|sch|public",
+        "n|tbl|public.offices",
+        "n|sch|public",
+        "n|col|public.signatories.office_id",
+        "n|col|public.offices.id",
+        "e|uniqueness|public.offices.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "template_versions"
+      ],
+      "writes": [
+        "s|fk|public.template_versions.template_versions_template_id_document_templates_id_fkey",
+        "n|fk|public.template_versions.template_versions_template_id_document_templates_id_fkey",
+        "e|fk|public.template_versions.template_versions_template_id_document_templates_id_fkey",
+        "n|con|public.template_versions.template_versions_template_id_document_templates_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.template_versions",
+        "n|sch|public",
+        "n|tbl|public.document_templates",
+        "n|sch|public",
+        "n|col|public.template_versions.template_id",
+        "n|col|public.document_templates.id",
+        "e|uniqueness|public.document_templates.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "template_versions"
+      ],
+      "writes": [
+        "s|fk|public.template_versions.template_versions_created_by_users_id_fkey",
+        "n|fk|public.template_versions.template_versions_created_by_users_id_fkey",
+        "e|fk|public.template_versions.template_versions_created_by_users_id_fkey",
+        "n|con|public.template_versions.template_versions_created_by_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.template_versions",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.template_versions.created_by",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "user_roles"
+      ],
+      "writes": [
+        "s|fk|public.user_roles.user_roles_user_id_users_id_fkey",
+        "n|fk|public.user_roles.user_roles_user_id_users_id_fkey",
+        "e|fk|public.user_roles.user_roles_user_id_users_id_fkey",
+        "n|con|public.user_roles.user_roles_user_id_users_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.user_roles",
+        "n|sch|public",
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|col|public.user_roles.user_id",
+        "n|col|public.users.id",
+        "e|uniqueness|public.users.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "user_roles"
+      ],
+      "writes": [
+        "s|fk|public.user_roles.user_roles_role_id_roles_id_fkey",
+        "n|fk|public.user_roles.user_roles_role_id_roles_id_fkey",
+        "e|fk|public.user_roles.user_roles_role_id_roles_id_fkey",
+        "n|con|public.user_roles.user_roles_role_id_roles_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.user_roles",
+        "n|sch|public",
+        "n|tbl|public.roles",
+        "n|sch|public",
+        "n|col|public.user_roles.role_id",
+        "n|col|public.roles.id",
+        "e|uniqueness|public.roles.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "users"
+      ],
+      "writes": [
+        "s|fk|public.users.users_office_id_offices_id_fkey",
+        "n|fk|public.users.users_office_id_offices_id_fkey",
+        "e|fk|public.users.users_office_id_offices_id_fkey",
+        "n|con|public.users.users_office_id_offices_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.users",
+        "n|sch|public",
+        "n|tbl|public.offices",
+        "n|sch|public",
+        "n|col|public.users.office_id",
+        "n|col|public.offices.id",
+        "e|uniqueness|public.offices.id"
+      ]
+    }
+  ],
+  "ddl": [
+    {
+      "schema": "public",
+      "name": "activity_logs",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "auth_logs",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "document_financial_values",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "document_revision_signatories",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "document_revisions",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "document_templates",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "document_types",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "documents",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "offices",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "permissions",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "role_document_type_permissions",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "role_permissions",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "roles",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "signatories",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "template_versions",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "user_roles",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "users",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "document_revision_status",
+      "values": [
+        "draft",
+        "finalized"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "name": "document_status",
+      "values": [
+        "draft",
+        "finalized",
+        "voided"
+      ],
+      "entityType": "enums"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "actor_user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "entity_type",
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "entity_id",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "action",
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "message",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "metadata",
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "auth_logs",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "auth_logs",
+      "name": "user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "auth_logs",
+      "name": "action",
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "auth_logs",
+      "name": "message",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "auth_logs",
+      "name": "ip_address",
+      "type": "varchar(64)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "auth_logs",
+      "name": "user_agent",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "auth_logs",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "revision_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "field_path",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "metric_key",
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "office_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "account_code",
+      "type": "varchar(64)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "fiscal_year",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "amount",
+      "type": "numeric(18,2)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "is_aggregate",
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "revision_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "signatory_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "slot_key",
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "display_name",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "display_designation",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "display_date",
+      "type": "date",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "document_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "template_version_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "revision_number",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "values",
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "status",
+      "type": "document_revision_status",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'draft'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "change_note",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "created_by",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "document_type_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "name",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "description",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "resource_key",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "is_active",
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "true",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_types",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_types",
+      "name": "code",
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_types",
+      "name": "name",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_types",
+      "name": "description",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_types",
+      "name": "is_active",
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "true",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_types",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "document_types",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "template_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "created_by",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "managing_office_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "title",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "description",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "reference_number",
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "fiscal_year",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "status",
+      "type": "document_status",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'draft'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "offices",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "offices",
+      "name": "code",
+      "type": "varchar(32)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "offices",
+      "name": "name",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "offices",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "offices",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "permissions",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "permissions",
+      "name": "name",
+      "type": "varchar(150)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "permissions",
+      "name": "description",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "permissions",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "permissions",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "role_document_type_permissions",
+      "name": "role_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "role_document_type_permissions",
+      "name": "document_type_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "role_document_type_permissions",
+      "name": "permission_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "role_document_type_permissions",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "role_permissions",
+      "name": "role_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "role_permissions",
+      "name": "permission_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "role_permissions",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "roles",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "roles",
+      "name": "name",
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "roles",
+      "name": "description",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "roles",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "roles",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "signatories",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "signatories",
+      "name": "full_name",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "signatories",
+      "name": "designation",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "signatories",
+      "name": "office_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "signatories",
+      "name": "is_active",
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "true",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "signatories",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "signatories",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "template_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "version_number",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "template_source",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "field_schema",
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "pdf_options",
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "change_note",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "created_by",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "user_roles",
+      "name": "user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "user_roles",
+      "name": "role_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "user_roles",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "email",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "password_hash",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "full_name",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "profile_url",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "office_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "is_active",
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "true",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "updated_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "activity_logs_entity_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "entity_type",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "entity_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "activity_logs_actor_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "actor_user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "activity_logs_created_at_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "created_at",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "auth_logs",
+      "name": "auth_logs_user_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "auth_logs",
+      "name": "auth_logs_created_at_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "created_at",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "document_financial_values_path_uq",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "revision_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "field_path",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "document_financial_values_office_metric_year_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "office_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "metric_key",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "fiscal_year",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "document_financial_values_account_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "account_code",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "document_revision_signatory_slot_uq",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "revision_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "slot_key",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "document_revision_signatory_person_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "signatory_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "document_revisions_document_revision_uq",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "document_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "revision_number",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "document_revisions_template_version_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "template_version_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "document_revisions_author_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "created_by",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "document_templates_type_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "document_type_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "documents_template_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "template_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "documents_created_by_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "created_by",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "documents_office_year_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "managing_office_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "fiscal_year",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "documents_status_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "status",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "role_document_type_permissions",
+      "name": "role_doc_type_perm_type_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "document_type_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "role_document_type_permissions",
+      "name": "role_doc_type_perm_permission_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "permission_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "role_permissions",
+      "name": "role_permissions_permission_id_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "permission_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "signatories",
+      "name": "signatories_office_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "office_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "template_versions_template_version_uq",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "template_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "version_number",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "user_roles",
+      "name": "user_roles_role_id_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "role_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "users_office_id_idx",
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "office_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "entityType": "indexes"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "activity_logs_actor_user_id_users_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "actor_user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "auth_logs",
+      "name": "auth_logs_user_id_users_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "document_financial_values_0xcP7bxIU26l_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "revision_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "document_revisions",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "document_financial_values_office_id_offices_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "office_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "offices",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "document_revision_signatories_2z5Kk7d8wLZl_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "revision_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "document_revisions",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "document_revision_signatories_signatory_id_signatories_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "signatory_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "signatories",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "document_revisions_document_id_documents_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "document_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "documents",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "document_revisions_59nhiy0IRSIp_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "template_version_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "template_versions",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "document_revisions_created_by_users_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "created_by"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "document_templates_document_type_id_document_types_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "document_type_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "document_types",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "documents_template_id_document_templates_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "template_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "document_templates",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "documents_created_by_users_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "created_by"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "documents_managing_office_id_offices_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "managing_office_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "offices",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "role_document_type_permissions",
+      "name": "role_document_type_permissions_role_id_roles_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "role_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "roles",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "role_document_type_permissions",
+      "name": "role_document_type_permissions_PqPdautRUeOn_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "document_type_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "document_types",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "role_document_type_permissions",
+      "name": "role_document_type_permissions_XR7m9pnpSjLb_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "permission_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "permissions",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "role_permissions",
+      "name": "role_permissions_role_id_roles_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "role_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "roles",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "role_permissions",
+      "name": "role_permissions_permission_id_permissions_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "permission_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "permissions",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "signatories",
+      "name": "signatories_office_id_offices_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "office_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "offices",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "template_versions_template_id_document_templates_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "template_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "document_templates",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "template_versions_created_by_users_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "created_by"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "user_roles",
+      "name": "user_roles_user_id_users_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "user_roles",
+      "name": "user_roles_role_id_roles_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "role_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "roles",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "users_office_id_offices_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "office_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "offices",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "role_document_type_permissions",
+      "name": "role_document_type_permissions_pkey",
+      "columns": [
+        "role_id",
+        "document_type_id",
+        "permission_id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "role_permissions",
+      "name": "role_permissions_pkey",
+      "columns": [
+        "role_id",
+        "permission_id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "user_roles",
+      "name": "user_roles_pkey",
+      "columns": [
+        "user_id",
+        "role_id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "activity_logs",
+      "name": "activity_logs_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "auth_logs",
+      "name": "auth_logs_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "document_financial_values",
+      "name": "document_financial_values_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "document_revision_signatories",
+      "name": "document_revision_signatories_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "document_revisions_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "document_templates_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "document_types",
+      "name": "document_types_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "documents",
+      "name": "documents_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "offices",
+      "name": "offices_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "permissions",
+      "name": "permissions_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "roles",
+      "name": "roles_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "signatories",
+      "name": "signatories_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "template_versions_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "users_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "document_templates",
+      "name": "document_templates_resource_key_key",
+      "nameExplicit": false,
+      "columns": [
+        "resource_key"
+      ],
+      "nullsNotDistinct": false,
+      "entityType": "uniques"
+    },
+    {
+      "schema": "public",
+      "table": "document_types",
+      "name": "document_types_code_key",
+      "nameExplicit": false,
+      "columns": [
+        "code"
+      ],
+      "nullsNotDistinct": false,
+      "entityType": "uniques"
+    },
+    {
+      "schema": "public",
+      "table": "offices",
+      "name": "offices_code_key",
+      "nameExplicit": false,
+      "columns": [
+        "code"
+      ],
+      "nullsNotDistinct": false,
+      "entityType": "uniques"
+    },
+    {
+      "schema": "public",
+      "table": "permissions",
+      "name": "permissions_name_key",
+      "nameExplicit": false,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "entityType": "uniques"
+    },
+    {
+      "schema": "public",
+      "table": "roles",
+      "name": "roles_name_key",
+      "nameExplicit": false,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "entityType": "uniques"
+    },
+    {
+      "schema": "public",
+      "table": "users",
+      "name": "users_email_key",
+      "nameExplicit": false,
+      "columns": [
+        "email"
+      ],
+      "nullsNotDistinct": false,
+      "entityType": "uniques"
+    },
+    {
+      "schema": "public",
+      "table": "document_revisions",
+      "name": "document_revisions_revision_positive",
+      "value": "\"revision_number\" >= 1",
+      "entityType": "checks"
+    },
+    {
+      "schema": "public",
+      "table": "template_versions",
+      "name": "template_versions_version_positive",
+      "value": "\"version_number\" >= 1",
+      "entityType": "checks"
+    }
+  ]
+}
