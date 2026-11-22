@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SAAOB <%= it.serialNumber ?? '' %></title>
+    <meta name="description" content="<%= it.serialNumber ?? '' %>" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      .fit-box {
+        @apply w-fit h-fit;
+      }
+    </style>
+  </head>
+
+  <body class="h-screen min-w-0 flex-col text-sm">
+    <header class="flex flex-col justify-center items-center font-bold w-full">
+      <h1 class="uppercase fit-box">
+        Statement of Appropriation, Allotment, Obligation &amp; Balances
+      </h1>
+      <h2 class="fit-box">From <%= it.startDate ?? '' %> - To <%= it.endDate ?? '' %></h2>
+    </header>
+    <main>
+      <table class="table-fixed border border-2 w-full">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="border border-2">Office</th>
+            <th class="border border-2 text-xs">Acct. Code</th>
+            <th class="border border-2">Appropriations</th>
+            <th class="border border-2">Allotment</th>
+            <th class="border border-2">Approp. Balance</th>
+            <th class="border border-2">Obligation</th>
+            <th class="border border-2">Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for (const office of it.offices ?? []) { %>
+          <tr>
+            <td colspan="7" class="border font-bold">
+              <%= office.name ?? '' %><% if (office.code != null && office.code !== '') { %> (<%=
+              office.code ?? '' %>)<% } %>
+            </td>
+          </tr>
+          <% for (const category of office.categories ?? []) { %>
+          <tr>
+            <td colspan="7" class="border border-b-2 font-bold"><%= category.name ?? '' %></td>
+          </tr>
+          <% for (const entry of category.entries ?? []) { %>
+          <tr class="text-center">
+            <td class="border"><%= entry.name ?? '' %></td>
+            <td class="border"><%= entry.accountCode ?? '' %></td>
+            <td class="border"><%= entry.appropriations ?? '' %></td>
+            <td class="border"><%= entry.allotment ?? '' %></td>
+            <td class="border"><%= entry.appropriationBalance ?? '' %></td>
+            <td class="border"><%= entry.obligation ?? '' %></td>
+            <td class="border"><%= entry.balance ?? '' %></td>
+          </tr>
+          <% } %>
+          <tr class="text-center">
+            <td class="border bg-gray-200">TOTAL <%= category.name ?? '' %></td>
+            <td class="border">-</td>
+            <td class="border bg-gray-200"><%= category.totals?.appropriations ?? '' %></td>
+            <td class="border bg-gray-200"><%= category.totals?.allotment ?? '' %></td>
+            <td class="border bg-gray-200"><%= category.totals?.appropriationBalance ?? '' %></td>
+            <td class="border bg-gray-200"><%= category.totals?.obligation ?? '' %></td>
+            <td class="border bg-gray-200"><%= category.totals?.balance ?? '' %></td>
+          </tr>
+          <% } %>
+          <tr class="text-center border border-b-2">
+            <td class="border uppercase">TOTAL APPROPRIATIONS</td>
+            <td class="border">-</td>
+            <td class="border"><%= office.totals?.appropriations ?? '' %></td>
+            <td class="border"><%= office.totals?.allotment ?? '' %></td>
+            <td class="border"><%= office.totals?.appropriationBalance ?? '' %></td>
+            <td class="border"><%= office.totals?.obligation ?? '' %></td>
+            <td class="border"><%= office.totals?.balance ?? '' %></td>
+          </tr>
+          <% } %>
+          <tr class="text-center">
+            <td class="border">GRAND TOTAL APPROPRIATIONS</td>
+            <td class="border">-</td>
+            <td class="border"><%= it.grandTotals?.appropriations ?? '' %></td>
+            <td class="border"><%= it.grandTotals?.allotment ?? '' %></td>
+            <td class="border"><%= it.grandTotals?.appropriationBalance ?? '' %></td>
+            <td class="border"><%= it.grandTotals?.obligation ?? '' %></td>
+            <td class="border"><%= it.grandTotals?.balance ?? '' %></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="flex flex-row w-full">
+        <div class="flex flex-col w-full">
+          <p class="font-bold mb-8">Prepared By</p>
+          <p class="uppercase font-bold"><%= it.preparedByName ?? '' %></p>
+          <p class="capitalize"><%= it.preparedByTitle ?? '' %></p>
+        </div>
+        <div class="flex flex-col w-full">
+          <p class="uppercase mb-8">CERTIFIED CORRECT:</p>
+          <p class="uppercase font-bold"><%= it.certifiedByName ?? '' %></p>
+          <p class="capitalize"><%= it.certifiedByTitle ?? '' %></p>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

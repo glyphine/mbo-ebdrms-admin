@@ -1,0 +1,1 @@
+<%~ include('./_raao', { ...it, documentCode: 'RAAOCO', allotmentClass: 'Capital Outlay', }) %>

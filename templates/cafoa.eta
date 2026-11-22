@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CAFOA-ON <%= it.serialNumber ?? '' %></title>
+    <meta name="description" content="<%= it.serialNumber ?? '' %>" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      .fit-box {
+        @apply w-fit h-fit;
+      }
+
+      .empty-row td {
+        height: 20px;
+      }
+    </style>
+  </head>
+
+  <body class="h-screen min-w-0 flex-col">
+    <header class="relative flex flex-col w-full justify-center items-center text-xs mt-6">
+      <p class="absolute top-0 right-0">Appendix 28</p>
+      <img
+        class="w-24 h-24 absolute mr-80"
+        src="<%= it.logoSrc ?? 'magpet-logo.png' %>"
+        alt="Magpet Logo"
+        height="2048"
+        width="2048"
+      />
+      <h4 class="fit-box">Republic of the Philippines</h4>
+      <h4 class="fit-box">Region XII</h4>
+      <h4 class="fit-box">Province of North Cotabato</h4>
+      <h4 class="fit-box">Municipality of Magpet</h4>
+    </header>
+    <main class="relative flex flex-col w-full justify-center items-center">
+      <h1 class="fit-box text-xl mt-12 font-bold mb-4">
+        Certification on Appropriations, Funds and Obligation of Allotment
+      </h1>
+
+      <div class="w-full flex flex-row text-xs">
+        <!-- Left Side -->
+        <div class="w-full flex flex-col">
+          <!-- Classing -->
+          <section class="h-full border border-2 border-b-0 border-r-0 p-2">
+            <p class="font-bold">Request</p>
+            <p class="mt-4">Payee: <span class="font-bold"><%= it.payeeName ?? '' %></span></p>
+
+            <table class="table-fixed w-full text-center border-collapse border">
+              <thead>
+                <tr>
+                  <th class="border">Function</th>
+                  <th class="border">Allotment Class</th>
+                  <th class="border">Expense Code</th>
+                  <th class="border">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (const detail of it.details ?? []) { %>
+                <tr
+                  class="<%= detail == null ? 'empty-row' : '' %>"
+                  aria-hidden="<%= detail == null %>"
+                >
+                  <td class="border"><%= detail?.function ?? '' %></td>
+                  <td class="border"><%= detail?.allotmentClass ?? '' %></td>
+                  <td class="border"><%= detail?.expenseCode ?? '' %></td>
+                  <td class="border"><%= detail?.amount ?? '' %></td>
+                </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- Amount -->
+          <section class="h-full border border-2 border-r-0 p-2 border-b-0">
+            <p>Total Amount Requested: <span><%= it.amount ?? '' %></span></p>
+            <p>Amount in Words:</p>
+            <p class="mt-2"><%= it.amountWords ?? '' %></p>
+
+            <p class="mt-8">Requesting Official</p>
+
+            <p class="mt-16"><%= it.officialName ?? '' %></p>
+            <div class="flex flex-row justify-center gap-8">
+              <p><%= it.officialTitle ?? '' %></p>
+              <p><%= it.officialDate ?? '' %></p>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right Side -->
+        <div class="w-full flex flex-col">
+          <!-- Obligation Meta -->
+          <section>
+            <p class="border border-2 border-b-0 p-2">
+              Obligation No: <span><%= it.obligationNumber ?? '' %></span>
+            </p>
+            <p class="border border-2 border-b-0 p-2">
+              Approved Amount: <span><%= it.approvedAmount ?? '' %></span>
+            </p>
+          </section>
+
+          <!-- Signatory #1 -->
+          <section class="border border-2 border-b-0 p-2 h-full">
+            <p>Certification:</p>
+            <p>
+              I hereby certify as to the existence of appropriation for the expenditures in the
+              amount specified herein:
+            </p>
+            <p class="mt-8"><%= it.signatory1Name ?? '' %></p>
+            <div class="flex flex-row justify-center gap-8">
+              <p><%= it.signatory1Title ?? '' %></p>
+              <p><%= it.signatory1Date ?? '' %></p>
+            </div>
+          </section>
+
+          <!-- Signatory #2 -->
+          <section class="border border-2 border-b-0 p-2 h-full">
+            <p>Certification:</p>
+            <p>
+              I hereby certify as to the availability of funds for the expenditures in the amount
+              specified herein:
+            </p>
+            <p class="mt-8"><%= it.signatory2Name ?? '' %></p>
+            <div class="flex flex-row justify-center gap-8">
+              <p><%= it.signatory2Title ?? '' %></p>
+              <p><%= it.signatory2Date ?? '' %></p>
+            </div>
+          </section>
+
+          <!-- Signatory #3 -->
+          <section class="border border-2 p-2 h-full border-b-0">
+            <p>Certification:</p>
+            <p>
+              I hereby certify that the allotments are available for obligation in the amount
+              specified herein:
+            </p>
+            <p class="mt-8"><%= it.signatory3Name ?? '' %></p>
+            <div class="flex flex-row justify-center gap-8">
+              <p><%= it.signatory3Title ?? '' %></p>
+              <p><%= it.signatory3Date ?? '' %></p>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="flex flex-col text-xs border border-2 p-2 gap-2">
+        <p class="text-center font-bold">Subsidiary Ledger</p>
+        <table class="table-fixed w-full text-center border-collapse border">
+          <thead>
+            <tr>
+              <th class="border">Date</th>
+              <th class="border">Particulars/References</th>
+              <th class="border">Liquidations</th>
+              <th class="border">Obligation Increase</th>
+              <th class="border">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (const ledger of it.ledgers ?? []) { %>
+            <tr
+              class="<%= ledger == null ? 'empty-row' : '' %>"
+              aria-hidden="<%= ledger == null %>"
+            >
+              <td class="border"><%= ledger?.date ?? '' %></td>
+              <td class="border"><%= ledger?.particulars ?? '' %></td>
+              <td class="border"><%= ledger?.liquidations ?? '' %></td>
+              <td class="border"><%= ledger?.obligation ?? '' %></td>
+              <td class="border"><%= ledger?.balance ?? '' %></td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>

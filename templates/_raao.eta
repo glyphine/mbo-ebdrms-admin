@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title><%= it.documentCode ?? '' %> <%= it.serialNumber ?? '' %></title>
+    <meta name="description" content="<%= it.serialNumber ?? '' %>" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      .fit-box {
+        @apply w-fit h-fit;
+      }
+
+      .empty-row td {
+        height: 20px; /* Prevents the browser from collapsing the row */
+      }
+    </style>
+  </head>
+
+  <body class="h-screen min-w-0 flex-col font-serif">
+    <header class="flex flex-col justify-center items-center">
+      <h1 class="uppercase fit-box text-xl font-bold">
+        Registry on Appropriations Allotment and Obligations - <%= it.allotmentClass ?? '' %> (<%=
+        it.documentCode ?? '' %>)
+      </h1>
+      <h4 class="font-sans uppercase fit-box text-sm">Municipality of Magpet</h4>
+      <h4 class="text-sm">
+        For the month of <span class="italic"><%= it.reportingMonth ?? '' %></span>
+      </h4>
+
+      <section class="flex flex-col mt-8 w-full">
+        <div class="flex flex-row justify-between w-full">
+          <p>Fund: <%= it.fund ?? '' %></p>
+          <p>Sheet No.: <%= it.sheetNumber ?? '' %></p>
+        </div>
+        <p>Function/Program/Project: <%= it.functionProgramProject ?? '' %></p>
+      </section>
+    </header>
+    <main>
+      <table class="table-fixed w-full border border-2">
+        <thead class="font-bold text-sm">
+          <tr>
+            <th class="border p-2">Amount of Approp.</th>
+            <th class="border p-2">Amount of Allotment</th>
+            <th class="border p-2">Date</th>
+            <th class="border p-2">Reference/CAFOA No.</th>
+            <th class="border p-2">Particulars</th>
+            <th class="border p-2">Total Amount of Allotment / Obligation</th>
+            <th class="border p-2" colspan="8">Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% const sections = [ { label: 'A. Budget', rows: it.budgetRows }, { label: 'B. Actual',
+          rows: it.actualRows }, ]; for (const { label, rows } of sections) { %>
+          <tr>
+            <td colspan="14"><%= label %></td>
+          </tr>
+          <% for (const row of rows ?? Array(5).fill(null)) { %>
+          <tr class="<%= row == null ? 'empty-row' : '' %>" aria-hidden="<%= row == null %>">
+            <td class="border"><%= row?.appropriationAmount ?? '' %></td>
+            <td class="border"><%= row?.allotmentAmount ?? '' %></td>
+            <td class="border"><%= row?.date ?? '' %></td>
+            <td class="border"><%= row?.referenceNumber ?? '' %></td>
+            <td class="border"><%= row?.particulars ?? '' %></td>
+            <td class="border"><%= row?.totalAmount ?? '' %></td>
+            <% for (let index = 0; index < 8; index++) { %>
+            <td class="border"><%= row?.details?.[index] ?? '' %></td>
+            <% } %>
+          </tr>
+          <% } %> <% } %>
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>
