@@ -27,6 +27,8 @@ pnpm dev
 
 API errors use an `error` object with `code`, `message`, and `requestId`. Request IDs correlate responses with structured server logs. Startup can complete during a database outage so readiness can recover when PostgreSQL returns.
 
+See [device enrollment and session persistence](docs/device-enrollment.md) for the internal service contract, initial administrator bootstrap plan, and PostgreSQL test setup.
+
 ## Contributing
 
 1. Create a feature branch.

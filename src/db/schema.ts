@@ -25,6 +25,7 @@ import {
   boolean,
   check,
   date,
+  foreignKey,
   index,
   integer,
   jsonb,
@@ -119,6 +120,83 @@ export const usersTable = pgTable(
     updatedAt: updatedAt(),
   },
   (t) => [index("users_office_id_idx").on(t.officeId)],
+);
+
+export const deviceStatusEnum = pgEnum("device_status", ["pending", "approved", "revoked"]);
+
+export const userDevicesTable = pgTable(
+  "user_devices",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id").notNull().references(() => usersTable.id),
+    label: varchar("label", { length: 100 }).notNull(),
+    credentialHash: varchar("credential_hash", { length: 64 }).notNull().unique(),
+    status: deviceStatusEnum("status").default("pending").notNull(),
+    createdAt: createdAt(),
+    approvedAt: timestamp("approved_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  },
+  (t) => [
+    uniqueIndex("user_devices_owner_id_uq").on(t.userId, t.id),
+    index("user_devices_pending_idx").on(t.createdAt).where(sql`${t.status} = 'pending'`),
+    check("user_devices_label_nonblank", sql`btrim(${t.label}) <> ''`),
+    check("user_devices_credential_hash_format", sql`${t.credentialHash} ~ '^[0-9a-f]{64}$'`),
+    check("user_devices_status_timestamps", sql`
+      (${t.status} = 'pending' AND ${t.approvedAt} IS NULL AND ${t.revokedAt} IS NULL)
+      OR (${t.status} = 'approved' AND ${t.approvedAt} IS NOT NULL AND ${t.revokedAt} IS NULL)
+      OR (${t.status} = 'revoked' AND ${t.revokedAt} IS NOT NULL)
+    `),
+  ],
+);
+
+export const authSessionsTable = pgTable(
+  "auth_sessions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id").notNull(),
+    deviceId: uuid("device_id").notNull(),
+    createdAt: createdAt(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  },
+  (t) => [
+    foreignKey({
+      name: "auth_sessions_device_owner_fk",
+      columns: [t.userId, t.deviceId],
+      foreignColumns: [userDevicesTable.userId, userDevicesTable.id],
+    }),
+    index("auth_sessions_device_owner_idx").on(t.userId, t.deviceId),
+    check("auth_sessions_expiry_after_creation", sql`${t.expiresAt} > ${t.createdAt}`),
+    check("auth_sessions_revocation_after_creation", sql`${t.revokedAt} >= ${t.createdAt}`),
+  ],
+);
+
+export const refreshTokensTable = pgTable(
+  "refresh_tokens",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    sessionId: uuid("session_id").notNull().references(() => authSessionsTable.id),
+    previousTokenId: uuid("previous_token_id"),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull().unique(),
+    createdAt: createdAt(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    consumedAt: timestamp("consumed_at", { withTimezone: true }),
+  },
+  (t) => [
+    uniqueIndex("refresh_tokens_session_id_uq").on(t.sessionId, t.id),
+    foreignKey({
+      name: "refresh_tokens_previous_session_fk",
+      columns: [t.sessionId, t.previousTokenId],
+      foreignColumns: [t.sessionId, t.id],
+    }),
+    uniqueIndex("refresh_tokens_previous_uq").on(t.previousTokenId).where(sql`${t.previousTokenId} IS NOT NULL`),
+    uniqueIndex("refresh_tokens_session_root_uq").on(t.sessionId).where(sql`${t.previousTokenId} IS NULL`),
+    uniqueIndex("refresh_tokens_session_unconsumed_uq").on(t.sessionId).where(sql`${t.consumedAt} IS NULL`),
+    check("refresh_tokens_hash_format", sql`${t.tokenHash} ~ '^[0-9a-f]{64}$'`),
+    check("refresh_tokens_previous_not_self", sql`${t.previousTokenId} <> ${t.id}`),
+    check("refresh_tokens_expiry_after_creation", sql`${t.expiresAt} > ${t.createdAt}`),
+    check("refresh_tokens_consumption_after_creation", sql`${t.consumedAt} >= ${t.createdAt}`),
+  ],
 );
 
 export const rolesTable = pgTable("roles", {
