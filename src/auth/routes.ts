@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync, FastifyReply } from 'fastify';
 import { errorSchema, sendError } from '../http/errors.js';
+import { bearerSecurity, recordSchema, uuid } from '../http/schemas.js';
 import { accessLifetimeSeconds, authenticate, issueAccessToken, unauthorized } from './access.js';
 import { maxPasswordLength } from './password.js';
 import { enrollDevice, login, logout, refresh, revokeDeviceSessions } from './service.js';
@@ -10,16 +11,10 @@ const passwordFields = {
   password: { type: 'string', minLength: 1, maxLength: maxPasswordLength, writeOnly: true },
 };
 const opaqueSecret = { type: 'string', minLength: 43, maxLength: 43, pattern: '^[A-Za-z0-9_-]{43}$' };
-const uuid = { type: 'string', format: 'uuid' };
 const deviceProofFields = { deviceId: uuid, deviceCredential: { ...opaqueSecret, writeOnly: true } };
-const bearerSecurity = [{ bearerAuth: [] }];
 
 type PasswordInput = { email: string; password: string };
 type DeviceProof = { deviceId: string; deviceCredential: string };
-
-function recordSchema(properties: Record<string, object>) {
-  return { type: 'object', properties, required: Object.keys(properties), additionalProperties: false };
-}
 
 const tokenResponse = recordSchema({
   accessToken: { type: 'string' }, refreshToken: opaqueSecret,

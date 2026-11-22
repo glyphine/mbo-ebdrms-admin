@@ -1,6 +1,6 @@
 # Device enrollment and session persistence
 
-The internal enrollment service accepts a verified account ID and a device label. It returns the new pending device ID and a random 256-bit credential once. The device row stores its SHA-256 verifier. Approval and revocation require a trusted operator context. Future routes must derive actor IDs from authenticated context and check the applicable RBAC grant before calling either transition. The service verifies credential proof only for an approved device owned by an active user. Device approval leaves role assignment and session creation to their own flows.
+The internal enrollment service accepts a verified account ID and a device label. It returns the new pending device ID and a random 256-bit credential once. The device row stores its SHA-256 verifier. The [administrator routes](authorization.md#administrator-routes) derive the actor ID from authenticated context and require `devices.manage` before approving or revoking enrollment. The service verifies credential proof only for an approved device owned by an active user. Device approval leaves role assignment and session creation to their own flows.
 
 Store the credential in the client OS secure credential store for that installation. A copied credential can satisfy the device proof if it is presented with the other required authentication material. This is software binding. Physical binding would require an OS-protected private key and request signing, with attestation if required.
 

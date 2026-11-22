@@ -25,4 +25,4 @@ Save the device ID and credential per enrolled account in iOS Keychain or Androi
 
 ## Account administration
 
-The existing internal approval and revocation services remain available to the later RBAC stage. When account management is added, close existing sessions in the same transaction as password reset or account disablement so re-enabling an account cannot restore a prior session. Apply role changes through live authorization checks. See the [bootstrap plan](device-enrollment.md#initial-administrator-bootstrap-plan) for the first administrator.
+The [administrator routes](authorization.md#administrator-routes) control enrollment approval, revocation, and account status. Disabling an account closes existing sessions in the same transaction. A future password-reset operation must close existing sessions as well. Role changes take effect through live authorization checks. See the [bootstrap plan](device-enrollment.md#initial-administrator-bootstrap-plan) for the first administrator.
