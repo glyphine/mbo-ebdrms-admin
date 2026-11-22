@@ -1,37 +1,31 @@
 # MBO EBDRMS Admin
 
-An admin dashboard for managing MBO EBDRMS data, workflows, and user access.
+A Fastify and TypeScript API for the Municipal Budget Office of Magpet's document and records management system.
 
 ## Overview
 
-This project is the administrative interface for the MBO EBDRMS platform. It is intended to provide a clear, secure place for authorized users to:
-
-- Review and manage platform records
-- Monitor operational activity
-- Maintain user and permission settings
-- Support day-to-day administrative workflows
-
-## Project Status
-
-This repository is currently a starter project. Implementation details and setup instructions will be added as the application is built.
+The API uses PostgreSQL with Drizzle. Application construction is in `src/app.ts`. The process entry point in `src/server.ts` loads and validates configuration, starts the listener, and closes Fastify and its connection pool on `SIGINT` or `SIGTERM`.
 
 ## Getting Started
 
-### Prerequisites
-
-Add the required runtime, package manager, and service dependencies here.
-
-### Installation
+Use Node.js 22, the pnpm version in `package.json`, and a PostgreSQL database for local development. Set `DATABASE_URL` to a PostgreSQL connection URL with a host and database name. `HOST` defaults to `0.0.0.0`, `PORT` to `3000`, and `NODE_ENV` to `development`. Use `test` or `production` to select those environments. The executable can load these values from an ignored local `.env` file.
 
 ```bash
-# Add the project installation command here.
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-### Development
+`pnpm build` compiles the API and `pnpm start` runs the compiled server. `pnpm typecheck` and `pnpm test` verify the foundation. The tests use Fastify injection and a stubbed readiness probe.
 
-```bash
-# Add the local development command here.
-```
+| Route | Purpose |
+| --- | --- |
+| `GET /` | Existing hello endpoint |
+| `GET /api/v1/ping?name=Magpet` | Versioned request and response example |
+| `GET /health/live` | Process liveness independent of PostgreSQL |
+| `GET /health/ready` | Bounded database probe, returning `503` on failure |
+| `GET /openapi.json` | OpenAPI generated from registered route schemas |
+
+API errors use an `error` object with `code`, `message`, and `requestId`. Request IDs correlate responses with structured server logs. Startup can complete during a database outage so readiness can recover when PostgreSQL returns.
 
 ## Contributing
 
