@@ -100,7 +100,7 @@ export async function verifyApprovedDevice(
       eq(userDevicesTable.userId, target.userId),
       eq(userDevicesTable.status, 'approved'),
       eq(usersTable.isActive, true),
-    ));
+    )).for('share', { of: userDevicesTable });
 
   return !!device && timingSafeEqual(
     Buffer.from(device.credentialHash, 'hex'), Buffer.from(hashCredential(credential), 'hex'),

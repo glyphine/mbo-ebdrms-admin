@@ -10,12 +10,14 @@ The API uses PostgreSQL with Drizzle. Application construction is in `src/app.ts
 
 Use Node.js 22, the pnpm version in `package.json`, and a PostgreSQL database for local development. Set `DATABASE_URL` to a PostgreSQL connection URL with a host and database name. `HOST` defaults to `0.0.0.0`, `PORT` to `3000`, and `NODE_ENV` to `development`. Use `test` or `production` to select those environments. The executable can load these values from an ignored local `.env` file.
 
+Set `AUTH_JWT_KEYS` and `AUTH_JWT_ACTIVE_KID` before starting the API. See the [authentication contract](docs/authentication.md) for signing key configuration and rotation, the device-gated routes, and client credential storage.
+
 ```bash
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-`pnpm build` compiles the API and `pnpm start` runs the compiled server. `pnpm typecheck` and `pnpm test` verify the foundation. The tests use Fastify injection and a stubbed readiness probe.
+`pnpm build` compiles the API and `pnpm start` runs the compiled server. Run `pnpm typecheck` and `pnpm test` to verify it. Set `DEVICE_TEST_DATABASE_URL` to a disposable database with the migrations applied to include the PostgreSQL auth and device tests.
 
 | Route | Purpose |
 | --- | --- |

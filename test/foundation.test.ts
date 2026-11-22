@@ -7,7 +7,9 @@ import { ConfigurationError, loadConfig } from '../src/config.js';
 import { createDatabase } from '../src/db/client.js';
 
 const databaseUrl = 'postgresql://test@localhost/ebdrms_test';
-const config = loadConfig({ NODE_ENV: 'test', DATABASE_URL: databaseUrl });
+const signingKey = Buffer.alloc(32, 1);
+const jwtEnv = { AUTH_JWT_KEYS: JSON.stringify({ test: signingKey.toString('base64url') }), AUTH_JWT_ACTIVE_KID: 'test' };
+const config = loadConfig({ ...jwtEnv, NODE_ENV: 'test', DATABASE_URL: databaseUrl });
 
 function assertError(response: { statusCode: number; json(): unknown }, status: number, code: string, message: string) {
   assert.equal(response.statusCode, status);
@@ -18,8 +20,9 @@ function assertError(response: { statusCode: number; json(): unknown }, status: 
 
 test('configuration is validated in all environments', () => {
   for (const environment of ['development', 'test', 'production']) {
-    assert.deepEqual(loadConfig({ NODE_ENV: environment, DATABASE_URL: databaseUrl }), {
+    assert.deepEqual(loadConfig({ ...jwtEnv, NODE_ENV: environment, DATABASE_URL: databaseUrl }), {
       environment, databaseUrl, host: '0.0.0.0', port: 3000,
+      jwt: { keys: new Map([['test', signingKey]]), activeKid: 'test', issuer: 'ebdrms-api', audience: 'ebdrms-mobile' },
     });
     assert.throws(() => loadConfig({ NODE_ENV: environment }), ConfigurationError);
   }
@@ -31,8 +34,12 @@ test('configuration is validated in all environments', () => {
     { PORT: '3e3' },
     { DATABASE_URL: 'https://localhost/ebdrms' },
     { DATABASE_URL: 'postgresql://localhost' },
+    { AUTH_JWT_KEYS: '{}' },
+    { AUTH_JWT_KEYS: '{"test":"too-short"}' },
+    { AUTH_JWT_ACTIVE_KID: 'unknown' },
+    { AUTH_JWT_ISSUER: 'invalid issuer' },
   ]) {
-    assert.throws(() => loadConfig({ DATABASE_URL: databaseUrl, ...env }), ConfigurationError);
+    assert.throws(() => loadConfig({ ...jwtEnv, DATABASE_URL: databaseUrl, ...env }), ConfigurationError);
   }
 });
 
