@@ -1,0 +1,111 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "702f636e-ac06-4de6-884e-d4d5793adabc",
+  "prevIds": [
+    "290fe7aa-a45d-49e5-9d7a-9987d8d96b2c"
+  ],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "template_versions",
+        "render_snapshot"
+      ],
+      "writes": [
+        "s|col|public.template_versions.render_snapshot",
+        "n|col|public.template_versions.render_snapshot",
+        "e|col|public.template_versions.render_snapshot"
+      ],
+      "reads": [
+        "n|tbl|public.template_versions",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "template_versions",
+        "content_digest"
+      ],
+      "writes": [
+        "s|col|public.template_versions.content_digest",
+        "n|col|public.template_versions.content_digest",
+        "e|col|public.template_versions.content_digest"
+      ],
+      "reads": [
+        "n|tbl|public.template_versions",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "template_versions"
+      ],
+      "writes": [
+        "s|ck|public.template_versions.template_versions_snapshot_pair",
+        "n|ck|public.template_versions.template_versions_snapshot_pair",
+        "e|ck|public.template_versions.template_versions_snapshot_pair",
+        "n|con|public.template_versions.template_versions_snapshot_pair"
+      ],
+      "reads": [
+        "n|tbl|public.template_versions",
+        "n|sch|public",
+        "n|col|public.template_versions.render_snapshot",
+        "n|col|public.template_versions.content_digest"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "template_versions",
+        "name": "render_snapshot",
+        "type": "jsonb",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "template_versions",
+        "name": "content_digest",
+        "type": "varchar(64)",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "template_versions",
+        "name": "template_versions_snapshot_pair",
+        "value": "(\"render_snapshot\" IS NULL AND \"content_digest\" IS NULL)\n      OR (\"render_snapshot\" IS NOT NULL AND \"content_digest\" IS NOT NULL AND \"content_digest\" ~ '^[0-9a-f]{64}$')",
+        "entityType": "checks"
+      }
+    }
+  ]
+}

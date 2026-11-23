@@ -31,6 +31,8 @@ API errors use an `error` object with `code`, `message`, and `requestId`. Reques
 
 See [device enrollment and session persistence](docs/device-enrollment.md) for the internal service contract and initial administrator bootstrap plan, and [authorization and access administration](docs/authorization.md) for grants, document rules, and administrator routes.
 
+See [trusted template publication](docs/template-publication.md) for the reviewed publication command and template metadata API.
+
 ## Contributing
 
 1. Create a feature branch.

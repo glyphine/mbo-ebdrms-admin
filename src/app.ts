@@ -12,6 +12,7 @@ import type { Database } from './db/client.js';
 import { handleError, sendError } from './http/errors.js';
 import { apiRoutes, registerHealth, registerPing } from './http/routes.js';
 import { adminRoutes } from './rbac/routes.js';
+import { templateRoutes } from './templates/routes.js';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -66,6 +67,7 @@ export function createApp(config: Config, options: AppOptions = {}) {
     routes.register(apiRoutes, { prefix: '/api/v1' });
     routes.register(authRoutes, { prefix: '/api/v1/auth' });
     routes.register(adminRoutes, { prefix: '/api/v1/admin' });
+    routes.register(templateRoutes, { prefix: '/api/v1/templates' });
     routes.get('/openapi.json', { schema: { hide: true } }, async () => routes.swagger());
   });
 

@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <title><%= it.documentCode ?? '' %> <%= it.serialNumber ?? '' %></title>
     <meta name="description" content="<%= it.serialNumber ?? '' %>" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style type="text/tailwindcss">
       .fit-box {
         @apply w-fit h-fit;

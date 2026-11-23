@@ -1,2 +1,1 @@
-<% const allotmentClass = 'Maintenance and Other Operating Expenses'; %> <%~ include('./_raao', {
-...it, documentCode: 'RAAOMOOE', allotmentClass }) %>
+<%~ include('./_raao', { ...it, documentCode: 'RAAOMOOE', allotmentClass: 'Maintenance and Other Operating Expenses', }) %>

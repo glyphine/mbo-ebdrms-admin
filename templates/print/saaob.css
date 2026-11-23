@@ -1,0 +1,4 @@
+@media print {
+  table { font-size: 11px; }
+  thead th:first-child { width: 24%; }
+}

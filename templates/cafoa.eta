@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <title>CAFOA-ON <%= it.serialNumber ?? '' %></title>
     <meta name="description" content="<%= it.serialNumber ?? '' %>" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style type="text/tailwindcss">
       .fit-box {
         @apply w-fit h-fit;
@@ -21,7 +20,7 @@
       <p class="absolute top-0 right-0">Appendix 28</p>
       <img
         class="w-24 h-24 absolute mr-80"
-        src="<%= it.logoSrc ?? 'magpet-logo.png' %>"
+        src="<%= it.logoSrc %>"
         alt="Magpet Logo"
         height="2048"
         width="2048"

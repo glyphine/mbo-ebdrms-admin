@@ -39,37 +39,13 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import type { DocField, DocValue, DocValues, PdfOptions, RenderSnapshot } from "../templates/contracts.js";
 
 // ---------------------------------------------------------------------------
 // Shared document-generator contracts
 // ---------------------------------------------------------------------------
 
-export type DocValue =
-  | string
-  | number
-  | boolean
-  | null
-  | DocValue[]
-  | { [key: string]: DocValue };
-
-export type DocValues = Record<string, DocValue>;
-
-export interface DocFieldDefinition {
-  key: string;
-  label: string;
-  type: "text" | "number" | "money" | "date" | "boolean" | "asset" | "group" | "list";
-  required?: boolean;
-  defaultValue?: DocValue;
-  fields?: DocFieldDefinition[];
-}
-
-export interface PdfOptions {
-  format: "A3" | "A4" | "A5" | "Letter" | "Legal";
-  landscape: boolean;
-  displayHeaderFooter: boolean;
-  printBackground: boolean;
-  margin: { top: string; right: string; bottom: string; left: string };
-}
+export type { DocField as DocFieldDefinition, DocValue, DocValues, PdfOptions } from "../templates/contracts.js";
 
 const createdAt = () =>
   timestamp("created_at", { withTimezone: true }).defaultNow().notNull();
@@ -319,8 +295,10 @@ export const templateVersionsTable = pgTable(
     // The actual, versioned Eta/HTML master template source in PostgreSQL.
     templateSource: text("template_source").notNull(),
     // Definitions of input controls, including nested list/group structures.
-    fieldSchema: jsonb("field_schema").$type<DocFieldDefinition[]>().notNull(),
+    fieldSchema: jsonb("field_schema").$type<readonly DocField[]>().notNull(),
     pdfOptions: jsonb("pdf_options").$type<PdfOptions>().notNull(),
+    renderSnapshot: jsonb("render_snapshot").$type<RenderSnapshot>(),
+    contentDigest: varchar("content_digest", { length: 64 }),
     changeNote: text("change_note"),
     createdBy: uuid("created_by")
       .notNull()
@@ -330,6 +308,8 @@ export const templateVersionsTable = pgTable(
   (t) => [
     uniqueIndex("template_versions_template_version_uq").on(t.templateId, t.versionNumber),
     check("template_versions_version_positive", sql`${t.versionNumber} >= 1`),
+    check("template_versions_snapshot_pair", sql`(${t.renderSnapshot} IS NULL AND ${t.contentDigest} IS NULL)
+      OR (${t.renderSnapshot} IS NOT NULL AND ${t.contentDigest} IS NOT NULL AND ${t.contentDigest} ~ '^[0-9a-f]{64}$')`),
   ],
 );
 

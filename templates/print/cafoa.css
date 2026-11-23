@@ -1,0 +1,4 @@
+@media print {
+  main > div:last-child { width: 100%; }
+  main > div:last-child th:nth-child(2) { width: 28%; }
+}

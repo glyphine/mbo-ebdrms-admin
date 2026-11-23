@@ -1,0 +1,5 @@
+@media print {
+  body { height: auto; print-color-adjust: exact; }
+  tr { break-inside: avoid; }
+  td, th { overflow-wrap: anywhere; }
+}

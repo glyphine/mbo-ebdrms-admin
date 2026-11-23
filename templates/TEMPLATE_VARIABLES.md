@@ -1,29 +1,13 @@
 # Eta template variables
 
-Point Eta's `views` option at this directory and render by filename without the extension. For example:
-
-```ts
-import { Eta } from 'eta';
-import { resolve } from 'node:path';
-
-const eta = new Eta({ views: resolve('templates') });
-const html = eta.render('cafoa', {
-  serialNumber: '2026-11-0001',
-  payeeName: 'Example Payee',
-  details: [
-    { function: '1011', allotmentClass: '100', expenseCode: '5-01-01-010', amount: '1,250.00' },
-  ],
-});
-```
-
-Pass dates, codes, and amounts as display strings to preserve formatting and leading zeros. Amounts also accept numbers, including zero. Missing or null scalar values render blank unless a default is listed below. Templates display the values supplied by the caller.
+These are the fields consumed by the checked-in Eta layouts. The published schema defines the API fields and shapes. Values are validated before template data is assembled. Codes remain strings to preserve leading zeros. Financial inputs use ungrouped exact decimal strings such as `1250.00`, and transaction dates use `YYYY-MM-DD`. Missing and null values render blank unless an array default is listed below.
 
 ## CAFOA (`cafoa.eta`)
 
 | Variable                                              | Display value                                                                                                                                    |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `serialNumber`                                        | Document serial number in the HTML title and metadata.                                                                                           |
-| `logoSrc`                                             | Municipal logo URL or path. Defaults to `magpet-logo.png`, which resolves relative to the rendered HTML. The source logo is in `doc_templates/`. |
+| `logoSrc`                                             | Internal data URL assembled from the vetted logo bytes in the published snapshot.                                                               |
 | `payeeName`                                           | Payee name.                                                                                                                                      |
 | `amount`                                              | Total amount requested.                                                                                                                          |
 | `amountWords`                                         | Total amount requested in words.                                                                                                                 |
