@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { compile } from '@tailwindcss/node';
@@ -7,6 +8,7 @@ import etaPackage from 'eta/package.json' with { type: 'json' };
 import { chromium } from 'playwright';
 import type { Browser, BrowserContext } from 'playwright';
 import tailwindPackage from 'tailwindcss/package.json' with { type: 'json' };
+import type { FinancialPrintView } from '../reports/print.js';
 import { templateCodes } from '../templates/contracts.js';
 import type { PdfOptions } from '../templates/contracts.js';
 import { prepareTemplateData } from '../templates/snapshot.js';
@@ -76,25 +78,29 @@ const tailwindFiles = new Map([
   ...['theme.css', 'preflight.css', 'utilities.css'].map((file) => [`./${file}`, join(dirname(tailwindEntry), file)] as const),
 ]);
 
-async function compileTemplate(content: SnapshotContent) {
+function compileTemplate(content: SnapshotContent) {
   const { renderSnapshot: snapshot, templateSource } = content;
   if (!templateCodes.includes(snapshot.code) || snapshot.engines.eta !== etaPackage.version || snapshot.engines.tailwind !== tailwindPackage.version) {
     throw new PdfRenderError('render');
   }
   verifyAssets(content);
-  const options = pdfOptions(content.pdfOptions);
-  const eta = new Eta({ autoEscape: true }); // eta/core has no filesystem resolver.
   const partials = Object.keys(snapshot.partials);
+  let shared: string | undefined;
   if (snapshot.code.startsWith('RAAO')) {
-    const shared = snapshot.partials['./_raao'];
+    shared = snapshot.partials['./_raao'];
     if (partials.length !== 1 || typeof shared !== 'string') throw new PdfRenderError('render');
-    eta.loadTemplate('./_raao', shared);
   } else if (partials.length) {
     throw new PdfRenderError('render');
   }
+  return compilePage(templateSource, snapshot.printCss, pdfOptions(content.pdfOptions), shared);
+}
+
+async function compilePage(templateSource: string, printCss: string, options: PdfOptions, shared?: string) {
+  const eta = new Eta({ autoEscape: true }); // eta/core has no filesystem resolver.
+  if (shared !== undefined) eta.loadTemplate('./_raao', shared);
   const template = eta.compile(templateSource);
 
-  const sources = [templateSource, ...Object.values(snapshot.partials)];
+  const sources = shared === undefined ? [templateSource] : [templateSource, shared];
   const inline = sources.flatMap((source) => [...source.matchAll(/<style type="text\/tailwindcss">([\s\S]*?)<\/style>/g)]
     .map((match) => match[1] ?? ''));
   // Utility discovery uses only reviewed literal class lists. The conditional empty-row class is defined in inline CSS.
@@ -109,9 +115,18 @@ async function compileTemplate(content: SnapshotContent) {
     },
     customJsResolver: async () => { throw new PdfRenderError('render'); },
   });
-  const css = `${compiler.build([...new Set(candidates)])}\n${snapshot.printCss}`;
+  const css = `${compiler.build([...new Set(candidates)])}\n${printCss}`;
   if (Buffer.byteLength(css) > 128 * 1024 || /<\/style\b/i.test(css)) throw new PdfRenderError('render');
   return { eta, template, options, css };
+}
+
+async function compileReportTemplate() {
+  const [source, css] = await Promise.all([
+    readFile(new URL('../../templates/financial-report.eta', import.meta.url), 'utf8'),
+    readFile(new URL('../../templates/print/financial-report.css', import.meta.url), 'utf8'),
+  ]);
+  return compilePage(source, css, { format: 'A4', landscape: false, displayHeaderFooter: false, printBackground: true,
+    margin: { top: '12mm', right: '12mm', bottom: '12mm', left: '12mm' } });
 }
 
 async function restrictPrintContext(context: BrowserContext) {
@@ -138,25 +153,35 @@ export class PdfRenderer {
     return this.browser;
   }
 
-  private compile(input: RenderInput) {
-    const key = input.contentDigest;
+  private compile(key: string, build: () => ReturnType<typeof compilePage>) {
     const cached = this.prepared.get(key);
     this.prepared.delete(key);
-    const prepared = cached ?? compileTemplate(input.content);
+    const prepared = cached ?? build();
     this.prepared.set(key, prepared);
     if (this.prepared.size > cacheSize) this.prepared.delete(this.prepared.keys().next().value!);
     if (!cached) void prepared.catch(() => { if (this.prepared.get(key) === prepared) this.prepared.delete(key); });
     return prepared;
   }
 
-  async render(load: () => Promise<RenderInput>) {
+  render(load: () => Promise<RenderInput>) {
+    return this.renderBounded(async () => {
+      const input = await until(load(), 5_000);
+      return { prepared: this.compile(input.contentDigest, async () => compileTemplate(input.content)),
+        data: () => prepareTemplateData(input.content, input.values) };
+    });
+  }
+
+  renderReport(view: FinancialPrintView) {
+    return this.renderBounded(async () => ({ prepared: this.compile('financial-report', compileReportTemplate), data: () => view }));
+  }
+
+  private async renderBounded(load: () => Promise<{ prepared: ReturnType<typeof compilePage>; data: () => object }>) {
     if (this.closed || this.running >= 2) throw new PdfRenderError('busy');
     this.running++;
     try {
-      const input = await until(load(), 5_000);
-      const { eta, template, css, options } = await until(this.compile(input), 5_000);
-      const data = prepareTemplateData(input.content, input.values);
-      const markup = eta.render(template, data);
+      const { prepared, data } = await load();
+      const { eta, template, css, options } = await until(prepared, 5_000);
+      const markup = eta.render(template, data());
       const html = markup.replace(/<head>/i, () => `<head><meta http-equiv="Content-Security-Policy" content="${csp}"><style>${css}</style>`);
       if (html === markup) throw new PdfRenderError('render');
       if (Buffer.byteLength(html) > maxHtmlBytes || (markup.match(/<tr(?=[\s>])/gi)?.length ?? 0) > maxRows) {

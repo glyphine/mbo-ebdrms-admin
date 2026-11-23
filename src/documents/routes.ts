@@ -2,7 +2,8 @@ import type { FastifyPluginAsync, FastifyReply } from 'fastify';
 import { authenticate } from '../auth/access.js';
 import { errorSchema, sendError } from '../http/errors.js';
 import { bearerSecurity, recordSchema, uuid } from '../http/schemas.js';
-import { PdfRenderError, PdfRenderer } from '../pdf/renderer.js';
+import { sendPdfFailure } from '../pdf/http.js';
+import { PdfRenderError } from '../pdf/renderer.js';
 import { exportRevisionPdf } from '../pdf/service.js';
 import { DocumentValidationError } from '../templates/validation.js';
 import { changeDocument, createDocument, DocumentError, listDocuments, listRevisions, readDocument, readRevision } from './service.js';
@@ -45,14 +46,7 @@ async function respond(reply: FastifyReply, work: () => Promise<unknown>, status
     const body = await work();
     return reply.code(status).send(body);
   } catch (error) {
-    if (error instanceof PdfRenderError) {
-      switch (error.kind) {
-        case 'busy': return sendError(reply.header('Retry-After', '1'), 503, 'PDF_BUSY', 'PDF renderer is at capacity');
-        case 'timeout': return sendError(reply, 504, 'PDF_TIMEOUT', 'PDF rendering timed out');
-        case 'limit': return sendError(reply, 422, 'PDF_LIMIT', 'Document exceeds PDF limits');
-        case 'render': throw error;
-      }
-    }
+    if (error instanceof PdfRenderError) return sendPdfFailure(reply, error);
     if (error instanceof DocumentValidationError) return sendError(reply, 400, 'VALIDATION_ERROR', error.message);
     if (error instanceof DocumentError) {
       const code = { 403: 'FORBIDDEN', 404: 'NOT_FOUND', 409: 'CONFLICT' }[error.status];
@@ -63,8 +57,6 @@ async function respond(reply: FastifyReply, work: () => Promise<unknown>, status
 }
 
 export const documentRoutes: FastifyPluginAsync = async (app) => {
-  const renderer = new PdfRenderer();
-  app.addHook('onClose', () => renderer.close());
   app.addHook('preHandler', authenticate);
   app.addHook('onRequest', async (_request, reply) => { reply.header('Cache-Control', 'private, no-store'); });
 
@@ -118,7 +110,7 @@ export const documentRoutes: FastifyPluginAsync = async (app) => {
     if (number > maxRevision) return sendError(reply, 400, 'VALIDATION_ERROR', 'Revision number is out of range');
     return respond(reply, async () => {
       try {
-        const { pdf, filename } = await exportRevisionPdf(app.db, renderer, request.auth!.userId, request.params.documentId, number);
+        const { pdf, filename } = await exportRevisionPdf(app.db, app.pdfRenderer, request.auth!.userId, request.params.documentId, number);
         reply.type('application/pdf').header('Content-Disposition', `attachment; filename="${filename}"`)
           .header('X-Content-Type-Options', 'nosniff');
         return pdf;

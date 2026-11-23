@@ -28,8 +28,8 @@ async function lockActiveUser(db: AuthDatabase, id: string, passwordHash?: strin
   return !!user;
 }
 
-async function audit(db: AuthDatabase, action: string, userId?: string) {
-  await db.insert(authLogsTable).values({ action, userId });
+async function audit(db: AuthDatabase, action: string, userId?: string, target?: { targetType: string; targetId: string }) {
+  await db.insert(authLogsTable).values({ action, userId, ...target });
 }
 
 export async function enrollDevice(db: AuthDatabase, input: PasswordInput & { label: string }) {
@@ -57,7 +57,7 @@ export async function login(db: AuthDatabase, input: PasswordInput & DeviceProof
     await tx.insert(refreshTokensTable).values({
       sessionId: session.id, tokenHash: digest(refreshToken), expiresAt: session.expiresAt,
     });
-    await audit(tx, 'auth.login_succeeded', user.id);
+    await audit(tx, 'auth.login_succeeded', user.id, { targetType: 'auth_session', targetId: session.id });
     return { ...target, sessionId: session.id, refreshToken };
   });
   if (!result) await audit(db, 'auth.login_denied', user?.id);
@@ -92,7 +92,7 @@ export async function refresh(db: AuthDatabase, input: DeviceProof & { refreshTo
     if (token.consumedAt) {
       await tx.update(authSessionsTable).set({ revokedAt: sql`clock_timestamp()` })
         .where(eq(authSessionsTable.id, session.id));
-      await audit(tx, 'auth.refresh_reuse', target.userId);
+      await audit(tx, 'auth.refresh_reuse', target.userId, { targetType: 'auth_session', targetId: session.id });
       return null; // Commit family revocation before reporting authentication failure.
     }
     if (token.tokenExpired) return undefined;
@@ -103,10 +103,11 @@ export async function refresh(db: AuthDatabase, input: DeviceProof & { refreshTo
     await tx.insert(refreshTokensTable).values({
       sessionId: session.id, previousTokenId: token.id, tokenHash: digest(refreshToken), expiresAt: token.expiresAt,
     });
-    await audit(tx, 'auth.refresh_succeeded', target.userId);
+    await audit(tx, 'auth.refresh_succeeded', target.userId, { targetType: 'auth_session', targetId: session.id });
     return { ...target, refreshToken };
   });
-  if (result === undefined) await audit(db, 'auth.refresh_denied', target?.userId);
+  if (result === undefined) await audit(db, 'auth.refresh_denied', target?.userId,
+    target && { targetType: 'auth_session', targetId: target.sessionId });
   return result;
 }
 
@@ -129,7 +130,7 @@ export async function logout(db: AuthDatabase, identity: SessionIdentity) {
       eq(authSessionsTable.id, identity.sessionId), eq(authSessionsTable.userId, identity.userId),
       eq(authSessionsTable.deviceId, identity.deviceId), isNull(authSessionsTable.revokedAt),
     )).returning({ id: authSessionsTable.id });
-    if (session) await audit(tx, 'auth.logout', identity.userId);
+    if (session) await audit(tx, 'auth.logout', identity.userId, { targetType: 'auth_session', targetId: session.id });
   });
 }
 
@@ -143,7 +144,7 @@ export async function revokeDeviceSessions(db: AuthDatabase, userId: string, dev
       eq(authSessionsTable.userId, userId), eq(authSessionsTable.deviceId, deviceId),
       isNull(authSessionsTable.revokedAt),
     ));
-    await audit(tx, 'auth.device_sessions_revoked', userId);
+    await audit(tx, 'auth.device_sessions_revoked', userId, { targetType: 'user_device', targetId: deviceId });
     return true;
   });
 }

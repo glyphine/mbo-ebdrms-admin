@@ -4,6 +4,7 @@ import jwt from '@fastify/jwt';
 import rateLimit from '@fastify/rate-limit';
 import swagger from '@fastify/swagger';
 import Fastify from 'fastify';
+import { auditRoutes } from './audit/routes.js';
 import { accessJwtOptions } from './auth/access.js';
 import { authRoutes } from './auth/routes.js';
 import type { Config } from './config.js';
@@ -12,12 +13,15 @@ import type { Database } from './db/client.js';
 import { documentRoutes } from './documents/routes.js';
 import { handleError, sendError } from './http/errors.js';
 import { apiRoutes, registerHealth, registerPing } from './http/routes.js';
+import { PdfRenderer } from './pdf/renderer.js';
 import { adminRoutes } from './rbac/routes.js';
+import { financialReportRoutes } from './reports/routes.js';
 import { templateRoutes } from './templates/routes.js';
 
 declare module 'fastify' {
   interface FastifyInstance {
     db: Database['db'];
+    pdfRenderer: PdfRenderer;
   }
 }
 
@@ -45,10 +49,13 @@ export function createApp(config: Config, options: AppOptions = {}) {
   });
 
   const database = options.database ?? createDatabase(config.databaseUrl);
+  const pdfRenderer = new PdfRenderer();
   database.onIdleError(() => app.log.error('Idle database connection failed'));
   app.decorate('db', database.db);
+  app.decorate('pdfRenderer', pdfRenderer);
   app.decorateRequest('auth', null);
   app.addHook('onClose', async () => database.close());
+  app.addHook('onClose', () => pdfRenderer.close());
   app.setErrorHandler(handleError);
   app.setNotFoundHandler(async (_request, reply) => {
     return sendError(reply, 404, 'NOT_FOUND', 'Route not found');
@@ -70,6 +77,8 @@ export function createApp(config: Config, options: AppOptions = {}) {
     routes.register(adminRoutes, { prefix: '/api/v1/admin' });
     routes.register(templateRoutes, { prefix: '/api/v1/templates' });
     routes.register(documentRoutes, { prefix: '/api/v1/documents' });
+    routes.register(financialReportRoutes, { prefix: '/api/v1/reports/financial' });
+    routes.register(auditRoutes, { prefix: '/api/v1/audit' });
     routes.get('/openapi.json', { schema: { hide: true } }, async () => routes.swagger());
   });
 

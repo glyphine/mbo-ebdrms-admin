@@ -344,6 +344,8 @@ export const documentsTable = pgTable(
     index("documents_created_by_idx").on(t.createdBy),
     index("documents_office_year_idx").on(t.managingOfficeId, t.fiscalYear),
     index("documents_status_idx").on(t.status),
+    index("documents_report_sources_idx").on(t.templateId, t.id)
+      .where(sql`${t.status} in ('finalized', 'archived')`),
   ],
 );
 
@@ -471,6 +473,7 @@ export const activityLogsTable = pgTable(
     index("activity_logs_entity_idx").on(t.entityType, t.entityId),
     index("activity_logs_actor_idx").on(t.actorUserId),
     index("activity_logs_created_at_idx").on(t.createdAt),
+    index("activity_logs_cursor_idx").on(t.createdAt, t.id),
   ],
 );
 
@@ -481,6 +484,8 @@ export const authLogsTable = pgTable(
     // Nullable for unknown users / failed sign-in attempts.
     userId: uuid("user_id").references(() => usersTable.id),
     action: varchar("action", { length: 100 }).notNull(),
+    targetType: varchar("target_type", { length: 100 }),
+    targetId: text("target_id"),
     message: text("message"),
     ipAddress: varchar("ip_address", { length: 64 }),
     userAgent: text("user_agent"),
@@ -490,5 +495,7 @@ export const authLogsTable = pgTable(
   (t) => [
     index("auth_logs_user_idx").on(t.userId),
     index("auth_logs_created_at_idx").on(t.createdAt),
+    index("auth_logs_cursor_idx").on(t.createdAt, t.id),
+    check("auth_logs_target_pair", sql`(${t.targetType} is null) = (${t.targetId} is null)`),
   ],
 );

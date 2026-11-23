@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Financial dashboard snapshot</title>
+</head>
+<body class="text-slate-900 text-sm">
+  <header class="border-b-2 border-slate-800 pb-4 mb-5">
+    <h1 class="text-2xl font-bold">Financial dashboard snapshot</h1>
+    <p class="mt-1 font-semibold"><%= it.sourceTitle %> · revision <%= it.revisionNumber %></p>
+    <p><%= it.fiscalYear %> · <%= it.period %></p>
+    <p class="text-xs text-slate-600">Source finalized <%= it.finalizedAt %></p>
+  </header>
+  <section class="mb-5">
+    <h2 class="font-bold text-base">Selected filters</h2>
+    <dl class="mt-2 grid grid-cols-2 gap-2">
+      <% for (const filter of it.filters) { %>
+      <div><dt class="font-semibold"><%= filter.label %></dt><dd><%= filter.value %></dd></div>
+      <% } %>
+    </dl>
+  </section>
+  <section class="mb-5">
+    <h2 class="font-bold text-base">Selected metrics (PHP)</h2>
+    <div class="grid grid-cols-2 gap-2 mt-2">
+      <% for (const metric of it.metrics) { %>
+      <div class="metric-card border border-slate-200 bg-slate-50 p-3">
+        <p class="text-xs"><%= metric.label %></p>
+        <p class="font-bold text-lg tabular-nums"><%= metric.amount ?? 'No data' %></p>
+      </div>
+      <% } %>
+    </div>
+    <% if (!it.periodMatched) { %><p class="mt-2">The source period falls outside the selected filters.</p><% } %>
+  </section>
+  <% if (it.charts.length) { %>
+  <section class="mb-5">
+    <h2 class="font-bold text-base">Charts by <%= it.groupBy %></h2>
+    <% if (it.omittedGroups) { %><p class="text-xs">Showing the first 12 groups. <%= it.omittedGroups %> further groups are outside the chart.</p><% } %>
+    <% for (const chart of it.charts) { %>
+    <section class="mt-3">
+      <h3 class="chart-heading font-semibold"><%= chart.label %></h3>
+      <% for (const point of chart.points) { %>
+      <div class="chart-row mt-1">
+        <div class="flex justify-between gap-3 text-xs"><span><%= point.label %></span><span class="tabular-nums"><%= point.amount %></span></div>
+        <div class="chart-track">
+          <div class="chart-bar<%= point.negative ? ' negative' : '' %>" style="width:<%= point.width %>%"></div>
+        </div>
+      </div>
+      <% } %>
+    </section>
+    <% } %>
+  </section>
+  <% } %>
+  <% if (it.breakdown.items.length) { %>
+  <section class="mb-5">
+    <h2 class="font-bold text-base">Breakdown by <%= it.groupBy %></h2>
+    <table class="w-full border-collapse mt-2 text-xs">
+      <thead><tr><th scope="col">Group</th><% for (const metric of it.metrics) { %><th scope="col"><%= metric.label %></th><% } %></tr></thead>
+      <tbody>
+      <% for (const row of it.breakdown.items) { %>
+      <tr><th scope="row"><%= row.label %></th><% for (const value of row.values) { %><td><%= value.amount ?? '–' %></td><% } %></tr>
+      <% } %>
+      </tbody>
+    </table>
+    <p class="mt-2 text-xs">Showing <%= it.breakdown.items.length %> of <%= it.breakdown.totalGroups %> groups on this breakdown page.</p>
+  </section>
+  <% } %>
+  <footer class="mt-4 text-xs text-slate-600">Snapshot <%= it.snapshotId %></footer>
+</body>
+</html>

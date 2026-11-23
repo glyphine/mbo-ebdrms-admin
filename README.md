@@ -37,6 +37,8 @@ See [documents and revision history](docs/documents.md) for document routes, lif
 
 See [PDF export](docs/pdf-export.md) for Chromium setup and the optional PDF integration suite.
 
+See [financial reporting and audit](docs/financial-reports.md) for dashboard filters, private snapshot exports, and audit retrieval.
+
 ## Contributing
 
 1. Create a feature branch.
