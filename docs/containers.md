@@ -49,13 +49,16 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO ebdrms_api;
 GRANT INSERT, UPDATE ON user_devices, auth_sessions, refresh_tokens TO ebdrms_api;
 GRANT INSERT ON activity_logs, auth_logs, documents, document_revisions,
   document_revision_signatories, document_financial_values TO ebdrms_api;
-GRANT UPDATE (status, updated_at) ON documents TO ebdrms_api;
+GRANT INSERT (year, last_value), UPDATE (last_value) ON document_serial_counters TO ebdrms_api;
+GRANT UPDATE (status, updated_at, serial_number, serial_fund_code) ON documents TO ebdrms_api;
 GRANT UPDATE (is_active, updated_at) ON users TO ebdrms_api;
 GRANT UPDATE (updated_at) ON document_templates, document_types TO ebdrms_api;
 GRANT INSERT, DELETE ON user_roles, role_permissions, role_document_type_permissions TO ebdrms_api;
 ```
 
 The narrow timestamp grant on template and type records lets document creation take PostgreSQL row locks while it pins the published version. For an existing shared environment, follow preflight, verified backup, reviewed migration, release, and smoke checks in that order. Apply changes to the runtime grants when a reviewed migration adds a table the API needs. The documented administrator bootstrap and reviewed `publish-cli.js` remain maintenance operations. Use `docker compose run --rm migrate node dist/templates/publish-cli.js inspect CAFOA` to inspect a packaged template digest.
+
+Run `docker compose run --rm migrate node dist/reference-data/seed-cli.js` once migrations are applied. The [reference data runbook](reference-data.md) covers seed conflicts, the fund-code decision, and the serial-number cutover for existing stacks.
 
 ```bash
 docker compose up -d --wait api

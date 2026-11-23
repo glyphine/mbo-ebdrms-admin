@@ -15,6 +15,7 @@ import { activityLogsTable, authSessionsTable, documentFinancialValuesTable, doc
   roleDocumentTypePermissionsTable, rolesTable, signatoriesTable, userRolesTable, usersTable } from '../src/db/schema.js';
 import { approveDevice, requestDeviceEnrollment } from '../src/devices/service.js';
 import { deriveFinancialValues, projectFinancialValues } from '../src/documents/financials.js';
+import { seedReferenceData } from '../src/reference-data/seed.js';
 import type { TemplateCode } from '../src/templates/contracts.js';
 import { publishTemplate } from '../src/templates/publication.js';
 import { documentRegistry } from '../src/templates/registry.js';
@@ -67,6 +68,7 @@ test('document API preserves authorized, pinned history across edits, finalizati
     }
   });
   await migrate(db, { migrationsFolder: 'drizzle', migrationsSchema: schema });
+  await seedReferenceData(db);
   await app.ready();
 
   const [writer, reviewer, outsider] = [randomUUID(), randomUUID(), randomUUID()];
@@ -81,8 +83,8 @@ test('document API preserves authorized, pinned history across edits, finalizati
     return publishTemplate(db, code, writer, snapshotDigest(await readPublication(code, directory)), directory);
   }
   const original = await publish('SAAOB');
-  const cafoa = await publish('CAFOA');
-  const raao = await publish('RAAOPS');
+  const otherCodes = ['CAFOA', 'RAAOCO', 'RAAOFE', 'RAAOMOOE', 'RAAOPS'] as const;
+  const otherForms = new Map(await Promise.all(otherCodes.map(async (code) => [code, await publish(code)] as const)));
   const actions = ['documents.create', 'documents.read', 'documents.revise', 'documents.finalize', 'documents.archive', 'documents.export'];
   const permissions = await db.insert(permissionsTable).values(actions.map((name) => ({ name }))).returning();
   async function grant(userId: string, templateIds: string[], names: string[]) {
@@ -96,7 +98,8 @@ test('document API preserves authorized, pinned history across edits, finalizati
         .map(({ id }) => ({ roleId: role.id, documentTypeId: template.documentTypeId, permissionId: id })));
     }
   }
-  await grant(writer, [original.templateId, cafoa.templateId, raao.templateId], [...actions.slice(0, 3), 'documents.export']);
+  await grant(writer, [original.templateId, ...Array.from(otherForms.values(), ({ templateId }) => templateId)],
+    [...actions.slice(0, 3), 'documents.export']);
   await grant(reviewer, [original.templateId], ['documents.read', 'documents.finalize', 'documents.archive']);
 
   async function access(userId: string) {
@@ -121,6 +124,7 @@ test('document API preserves authorized, pinned history across edits, finalizati
   assert.equal((await post('', input, reviewerToken)).statusCode, 403);
   for (const invalid of [
     { ...input, templateSource: '<%~ it %>' }, { ...input, pdfOptions: {} }, { ...input, resource: '../saaob' },
+    { ...input, values: { ...values, serialNumber: '0001-01-27-100' } },
     { ...input, values: { ...values, grandTotals: null } }, { ...input, values: { ...values, preparedByName: 'Forged' } },
     { ...input, values: { offices: [{ categories: [{ entries: [{ balance: '1.00' }] }] }] } },
     { ...input, values: { offices: [{ code: 'unknown' }] } },
@@ -133,6 +137,7 @@ test('document API preserves authorized, pinned history across edits, finalizati
   const { id } = created.json<{ id: string }>();
   assert.equal(created.json().createdBy, writer);
   assert.equal(created.json().managingOfficeId, managingOffice);
+  assert.equal(created.json().serialNumber, null);
   assert.equal(created.json().currentRevision, 1);
   const versionOne = await get(`/${id}/revisions/1`);
   assert.equal(versionOne.statusCode, 200, versionOne.body);
@@ -151,15 +156,44 @@ test('document API preserves authorized, pinned history across edits, finalizati
   const financialRows = await db.select().from(documentFinancialValuesTable).where(eq(documentFinancialValuesTable.revisionId, originalRevisionId));
   assert.equal(financialRows.find(({ fieldPath }) => fieldPath === 'grandTotals.appropriations')?.isAggregate, true);
 
-  const r = await post('', { templateVersionId: raao.id, title: 'RAAO', values: { actualRows: [null, { details: [null, '10.00'] }] } });
-  const c = await post('', { templateVersionId: cafoa.id, title: 'CAFOA', values: { details: [null, { amount: '1.00' }] },
-    signatories: [{ slotKey: 'official', signatoryId, date: '2026-10-01' }] });
-  assert.equal(r.statusCode, 201, r.body);
-  assert.equal(c.statusCode, 201, c.body);
-  assert.deepEqual((await get(`/${r.json().id}/revisions/1`)).json().values.actualRows, [null, { details: [null, '10.00'], totalAmount: '10.00' }]);
-  assert.equal((await get(`/${c.json().id}/revisions/1`)).json().values.officialDate, '2026-10-01');
+  for (const [code, template] of otherForms) {
+    await t.test(`${code} creates, revises and exports its pinned form`, async () => {
+      const initial = code === 'CAFOA' ? { details: [null, { amount: '1.00' }] } :
+        { actualRows: [null, { details: [null, '10.00'] }] };
+      const signatories = code === 'CAFOA' ? [{ slotKey: 'official', signatoryId, date: '2026-10-01' }] : undefined;
+      const created = await post('', { templateVersionId: template.id, title: code, values: initial, signatories });
+      assert.equal(created.statusCode, 201, created.body);
+      assert.equal(created.json().documentTypeCode, code);
+      const documentId = created.json().id as string;
+      const documentPath = `/${documentId}/revisions`;
+      const first = await get(`${documentPath}/1`);
+      assert.equal(first.statusCode, 200, first.body);
+      if (code === 'CAFOA') {
+        assert.equal(first.json().values.officialDate, '2026-10-01');
+        assert.deepEqual(first.json().values.details, initial.details);
+      } else {
+        assert.deepEqual(first.json().values.actualRows, [null, { details: [null, '10.00'], totalAmount: '10.00' }]);
+      }
+      const revisedValues = code === 'CAFOA' ? { ...initial, payeeName: 'REVISED001' } :
+        { actualRows: [null, { particulars: 'REVISED001', details: [null, '10.00'] }] };
+      const revised = await post(documentPath, { expectedRevision: 1, values: revisedValues });
+      assert.equal(revised.statusCode, 201, revised.body);
+      assert.equal(revised.json().currentRevision, 2);
+      const second = await get(`${documentPath}/2`);
+      assert.equal(second.statusCode, 200, second.body);
+      assert.equal(second.json().templateVersionId, template.id);
+      assert.deepEqual(second.json().signatories, first.json().signatories);
+      assert.equal(code === 'CAFOA' ? second.json().values.payeeName : second.json().values.actualRows[1].particulars, 'REVISED001');
+      assert.equal((await get(`/${documentId}`, reviewerToken)).statusCode, 404);
+      if (runChromiumTests) {
+        const pdf = await get(`${documentPath}/2/pdf`);
+        assert.equal(pdf.statusCode, 200);
+        assert.equal(pdf.headers['content-disposition'], `attachment; filename="${code}-${documentId}-r2.pdf"`);
+        assert.match(readPdf('pdftotext', ['-', '-'], pdf.rawPayload), /REVISED001/);
+      }
+    });
+  }
   assert.deepEqual((await get('', reviewerToken)).json().map((document: { id: string }) => document.id), [id]);
-  assert.equal((await get(`/${r.json().id}`, reviewerToken)).statusCode, 404);
   assert.equal((await get(`/${id}`, outsiderToken)).statusCode, 404);
   assert.equal((await get(`/${id}/revisions/1`, outsiderToken)).statusCode, 404);
   assert.equal((await post(`/${id}/revisions`, { expectedRevision: 1, values }, reviewerToken)).statusCode, 403);
@@ -174,21 +208,26 @@ test('document API preserves authorized, pinned history across edits, finalizati
   assert.notEqual(newer.id, original.id);
   assert.equal((await post('', input)).statusCode, 409);
   await db.update(signatoriesTable).set({ fullName: 'Renamed', isActive: false }).where(eq(signatoriesTable.id, signatoryId));
-  const results = await Promise.all(['Attempt A', 'Attempt B'].map((serialNumber) =>
-    post(`/${id}/revisions`, { expectedRevision: 1, values: { ...values, serialNumber } })));
+  assert.equal((await post(`/${id}/revisions`, { expectedRevision: 1, values: { ...values, serialNumber: '0001-01-27-100' } })).statusCode, 400);
+  const results = await Promise.all(['Attempt A', 'Attempt B'].map((startDate) =>
+    post(`/${id}/revisions`, { expectedRevision: 1, values: { ...values, startDate } })));
   assert.deepEqual(results.map(({ statusCode }) => statusCode).sort(), [201, 409], results.map(({ body }) => body).join('\n'));
   const second = (await get(`/${id}/revisions/2`)).json();
   assert.equal(second.templateVersionId, original.id);
   assert.equal(second.signatories[0].displayName, 'Original Name');
-  assert.equal((await post(`/${id}/finalize`, { expectedRevision: 1 }, reviewerToken)).statusCode, 409);
-  const finalized = await post(`/${id}/finalize`, { expectedRevision: 2 }, reviewerToken);
+  assert.equal((await post(`/${id}/finalize`, { expectedRevision: 1, fundCode: '100' }, reviewerToken)).statusCode, 409);
+  assert.equal((await post(`/${id}/finalize`, { expectedRevision: 2 }, reviewerToken)).statusCode, 400);
+  assert.equal((await post(`/${id}/finalize`, { expectedRevision: 2, fundCode: '101' }, reviewerToken)).statusCode, 400);
+  const finalized = await post(`/${id}/finalize`, { expectedRevision: 2, fundCode: '100' }, reviewerToken);
   assert.equal(finalized.statusCode, 200, finalized.body);
   assert.equal(finalized.json().status, 'finalized');
+  const { serialNumber } = finalized.json();
+  assert.match(serialNumber, /^0001-(0[1-9]|1[0-2])-[0-9]{2}-100$/);
   const final = (await get(`/${id}/revisions/3`)).json();
   assert.equal(final.createdBy, reviewer);
   assert.equal(final.templateVersionId, original.id);
   assert.deepEqual(final.signatories, second.signatories);
-  assert.deepEqual(final.values, second.values);
+  assert.deepEqual(final.values, { ...second.values, serialNumber });
   assert.equal((await post(`/${id}/revisions`, { expectedRevision: 3, values })).statusCode, 409);
   const finalRows = await db.select().from(documentFinancialValuesTable).where(eq(documentFinancialValuesTable.revisionId, final.id));
   assert.equal(finalRows.length, financialRows.length);
@@ -196,6 +235,7 @@ test('document API preserves authorized, pinned history across edits, finalizati
   const archived = await post(`/${id}/archive`, { expectedRevision: 3 }, reviewerToken);
   assert.equal(archived.statusCode, 200, archived.body);
   assert.equal(archived.json().status, 'archived');
+  assert.equal(archived.json().serialNumber, serialNumber);
   assert.deepEqual((await get(`/${id}/revisions`)).json().map(({ status }: { status: string }) => status), ['draft', 'draft', 'finalized']);
   assert.deepEqual((await get(`/${id}/revisions/1`)).json(), versionOne.json());
   assert.equal((await get(`/${id}`)).json().currentRevision, 3);
@@ -231,13 +271,15 @@ test('document API preserves authorized, pinned history across edits, finalizati
   await assert.rejects(db.delete(documentFinancialValuesTable).where(eq(documentFinancialValuesTable.revisionId, originalRevisionId)), immutable);
   await assert.rejects(db.insert(documentRevisionsTable).values({ documentId: id, templateVersionId: newer.id,
     revisionNumber: 4, values: {}, createdBy: writer }), /Failed query/);
+  const revisionsBeforeFailure = await db.$count(documentRevisionsTable);
+  const documentsBeforeFailure = await db.$count(documentsTable);
   const beforeFailure = await db.select({ id: documentFinancialValuesTable.id }).from(documentFinancialValuesTable);
   await db.execute(sql`alter table activity_logs add constraint reject_test_creation_audit check (action <> 'document.created') not valid`);
-  const interrupted = await post('', { templateVersionId: raao.id, title: 'Interrupted write',
+  const interrupted = await post('', { templateVersionId: otherForms.get('RAAOPS')!.id, title: 'Interrupted write',
     values: { actualRows: [{ details: ['1.00'] }] } });
   assert.equal(interrupted.statusCode, 500);
-  assert.equal((await db.select().from(documentRevisionsTable)).length, runChromiumTests ? 6 : 5);
+  assert.equal(await db.$count(documentRevisionsTable), revisionsBeforeFailure);
   const afterFailure = await db.select({ id: documentFinancialValuesTable.id }).from(documentFinancialValuesTable);
   assert.deepEqual(afterFailure.map(({ id }) => id).sort(), beforeFailure.map(({ id }) => id).sort());
-  assert.equal((await db.select().from(documentsTable)).length, runChromiumTests ? 4 : 3);
+  assert.equal(await db.$count(documentsTable), documentsBeforeFailure);
 });

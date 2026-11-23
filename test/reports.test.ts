@@ -11,6 +11,8 @@ import { activityLogsTable, authLogsTable, authSessionsTable, documentRevisionsT
   usersTable } from '../src/db/schema.js';
 import { approveDevice, requestDeviceEnrollment } from '../src/devices/service.js';
 import { changeDocument, createDocument } from '../src/documents/service.js';
+import { seedReferenceData } from '../src/reference-data/seed.js';
+import { findOfficesByCodes } from '../src/reference-data/service.js';
 import { publishTemplate } from '../src/templates/publication.js';
 import { readPublication, snapshotDigest } from '../src/templates/snapshot.js';
 import { readPdf, runChromiumTests } from './helpers/pdf.js';
@@ -39,14 +41,16 @@ test('financial dashboard, PDF and audit share authorized and exact reporting da
     }
   });
   await migrate(db, { migrationsFolder: 'drizzle', migrationsSchema: schema });
+  await seedReferenceData(db);
   await app.ready();
 
   const [operator, viewer, outsider, auditor] = [randomUUID(), randomUUID(), randomUUID(), randomUUID()];
   await db.insert(usersTable).values([operator, viewer, outsider, auditor].map((id) => ({
     id, email: `${id}@example.test`, fullName: 'Fixture', passwordHash: 'fixture-only',
   })));
-  const [officeA, officeB] = [randomUUID(), randomUUID()];
-  await db.insert(officesTable).values([{ id: officeA, code: '0101', name: 'Budget Office' }, { id: officeB, code: '0202', name: 'Health Office' }]);
+  const offices = await findOfficesByCodes(db, ['1011 (1)', '4411']);
+  const officeA = offices.find(({ code }) => code === '1011 (1)')!.id;
+  const officeB = offices.find(({ code }) => code === '4411')!.id;
   const published = async (code: 'SAAOB' | 'RAAOPS') => publishTemplate(db, code, operator, snapshotDigest(await readPublication(code)));
   const saaob = await published('SAAOB');
   const raao = await published('RAAOPS');
@@ -89,35 +93,45 @@ test('financial dashboard, PDF and audit share authorized and exact reporting da
   const sources = `${base}/sources`;
   const auditUrl = '/api/v1/audit/events';
   const january = { startDate: '2026-01-01', endDate: '2026-01-31' };
-  const alternate = { offices: [{ code: '0101', categories: [{ name: 'MOOE', entries: [{ appropriations: '99.00' }] }] }] };
+  const alternate = { offices: [{ code: '1011 (1)', categories: [{ name: 'MOOE', entries: [{ appropriations: '99.00' }] }] }] };
   const values = { ...january, offices: [
-    { code: '0101', categories: [{ name: 'MOOE', entries: [{ appropriations: '9007199254740993.10', allotment: '0.20', obligation: '0.10' }] },
+    { code: '1011 (1)', categories: [{ name: 'MOOE', entries: [{ appropriations: '9007199254740993.10', allotment: '0.20', obligation: '0.10' }] },
       { name: 'Personal Services', entries: [{ appropriations: '0.30', allotment: '0.00' }] }] },
-    { code: '0202', categories: [{ name: 'MOOE', entries: [{ appropriations: '0.20', allotment: '0.20', obligation: '0.30' }] }] },
+    { code: '4411', categories: [{ name: 'MOOE', entries: [{ appropriations: '0.20', allotment: '0.20', obligation: '0.30' }] }] },
     { name: 'Unassigned', categories: [{ entries: [{ appropriations: '0.10' }] }] },
   ] };
   const primary = await createDocument(db, operator, { templateVersionId: saaob.id,
     managingOfficeId: officeB, fiscalYear: 2026, title: 'January snapshot <script>fixture</script>', values: { ...january, ...alternate } });
   await changeDocument(db, operator, primary.id, { operation: 'revise', expectedRevision: 1, values });
-  await changeDocument(db, operator, primary.id, { operation: 'finalize', expectedRevision: 2 });
+  await changeDocument(db, operator, primary.id, { operation: 'finalize', expectedRevision: 2, fundCode: '100' });
   await changeDocument(db, operator, primary.id, { operation: 'archive', expectedRevision: 3 });
   const [head] = await db.select().from(documentRevisionsTable).where(and(eq(documentRevisionsTable.documentId, primary.id),
     eq(documentRevisionsTable.revisionNumber, 3)));
   assert.ok(head);
   const overlap = await createDocument(db, operator, { templateVersionId: saaob.id, fiscalYear: 2026, title: 'Overlapping snapshot',
     values: { ...january, ...alternate } });
-  await changeDocument(db, operator, overlap.id, { operation: 'finalize', expectedRevision: 1 });
+  const different = await createDocument(db, operator, { templateVersionId: raao.id, fiscalYear: 2026, title: 'RAAO',
+    values: { fund: '101', budgetRows: [{ appropriationAmount: '500000.00', details: ['500000.00'] }] } });
+  await assert.rejects(changeDocument(db, operator, different.id, { operation: 'finalize', expectedRevision: 1, fundCode: '100' }), /must match/);
+  await assert.rejects(changeDocument(db, operator, different.id, { operation: 'finalize', expectedRevision: 1, fundCode: '101' }), /registered/);
+  const [legacyDraft] = await db.select().from(documentRevisionsTable).where(eq(documentRevisionsTable.documentId, different.id));
+  assert.equal(legacyDraft?.values['fund'], '101');
+  await changeDocument(db, operator, different.id, { operation: 'revise', expectedRevision: 1,
+    values: { fund: '200', budgetRows: [{ appropriationAmount: '500000.00', details: ['500000.00'] }] } });
+  const issued = await Promise.all([
+    changeDocument(db, operator, overlap.id, { operation: 'finalize', expectedRevision: 1, fundCode: '100' }),
+    changeDocument(db, operator, different.id, { operation: 'finalize', expectedRevision: 2, fundCode: '200' }),
+  ]);
+  assert.deepEqual(issued.map(({ serialNumber }) => serialNumber?.slice(0, 4)).sort(), ['0002', '0003']);
+  assert.deepEqual(issued.map(({ serialNumber }) => serialNumber?.slice(-3)), ['100', '200']);
   const missingDates = await createDocument(db, operator, { templateVersionId: saaob.id, title: 'Legacy coverage labels',
     values: { startDate: 'January 1', endDate: 'January 31', ...alternate } });
-  await changeDocument(db, operator, missingDates.id, { operation: 'finalize', expectedRevision: 1 });
+  await changeDocument(db, operator, missingDates.id, { operation: 'finalize', expectedRevision: 1, fundCode: '100' });
   const stale = await createDocument(db, operator, { templateVersionId: saaob.id, fiscalYear: 2026, title: 'Inconsistent head', values });
-  await changeDocument(db, operator, stale.id, { operation: 'finalize', expectedRevision: 1 });
+  await changeDocument(db, operator, stale.id, { operation: 'finalize', expectedRevision: 1, fundCode: '100' });
   await db.insert(documentRevisionsTable).values({ documentId: stale.id, templateVersionId: saaob.id, createdBy: operator,
     revisionNumber: 3, status: 'draft', values: {} });
   const draft = await createDocument(db, operator, { templateVersionId: saaob.id, fiscalYear: 2026, title: 'Draft only', values });
-  const different = await createDocument(db, operator, { templateVersionId: raao.id, fiscalYear: 2026, title: 'RAAO',
-    values: { budgetRows: [{ appropriationAmount: '500000.00', details: ['500000.00'] }] } });
-  await changeDocument(db, operator, different.id, { operation: 'finalize', expectedRevision: 1 });
 
   assert.equal((await call('GET', sources)).statusCode, 401);
   assert.equal((await call('GET', sources, audit)).statusCode, 403);
@@ -168,7 +182,7 @@ test('financial dashboard, PDF and audit share authorized and exact reporting da
   const snapshot = selected.json().snapshotId as string;
   assert.equal(amount(selected.json(), 'appropriations'), '9007199254740993.10');
   assert.equal(amount(selected.json(), 'balance'), '0.10');
-  assert.equal(selected.json().chart.points[0].label, 'Budget Office (0101) / MOOE');
+  assert.equal(selected.json().chart.points[0].label, 'OMM – Tourism Unit (1011 (1)) / MOOE');
   assert.equal((await call('POST', `${base}/pdf`, reader, selection)).statusCode, 403);
   assert.equal((await call('POST', `${base}/pdf`, writer, { ...selection, templateSource: '<%= x %>' })).statusCode, 400);
   if (runChromiumTests) {
@@ -179,7 +193,7 @@ test('financial dashboard, PDF and audit share authorized and exact reporting da
     assert.match(String(pdf.headers['content-disposition']), /^attachment; filename="financial-report-/);
     const text = readPdf('pdftotext', ['-', '-'], pdf.rawPayload).replace(/\s+/g, ' ');
     for (const expected of ['Financial dashboard snapshot', '2026-01-01 to 2026-01-31', 'Selected filters',
-      'Budget Office (0101)', 'MOOE', 'Appropriations', '9007199254740993.10', 'Charts by Office and category', snapshot]) {
+      'Tourism Unit (1011 (1))', 'MOOE', 'Appropriations', '9007199254740993.10', 'Charts by Office and category', snapshot]) {
       assert.ok(text.includes(expected), `PDF missing ${expected}: ${text}`);
     }
     assert.doesNotMatch(text, /STATEMENT OF APPROPRIATION|Health Office/);

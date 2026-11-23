@@ -11,14 +11,16 @@ Every route under `/api/v1/documents` requires an active bearer session and the 
 | `GET /:documentId/revisions/:revisionNumber` | `documents.read` | Returns the exact revision, its values, signatory snapshots, and `templateVersionId`. |
 | `GET /:documentId/revisions/:revisionNumber/pdf` | `documents.read`, `documents.export` | Downloads the exact revision using its pinned snapshot. See the [PDF export contract](pdf-export.md). |
 | `POST /:documentId/revisions` | `documents.revise` | Appends a draft from replacement `values`. |
-| `POST /:documentId/finalize` | `documents.finalize` | Appends a finalized revision from the current draft, including its saved signatories and financial projections. |
+| `POST /:documentId/finalize` | `documents.finalize` | Requires `fundCode` and appends a finalized revision with the assigned serial number, saved signatories, and financial projections. |
 | `POST /:documentId/archive` | `documents.archive` | Archives a finalized document and keeps its finalized revision as the head. |
 
-Create requires `title`, `templateVersionId`, and `values`. Optional metadata includes `description`, `referenceNumber`, `fiscalYear`, `managingOfficeId`, and `changeNote`. Revise, finalize, and archive require `expectedRevision`. If publication or a concurrent edit made the caller's selection stale, the API returns `409`. Refresh the metadata and decide whether to resubmit. Lists return up to 50 rows. Archived documents retain their regular read rules. The legacy `voided` state also remains readable with its existing grant.
+Create requires `title`, `templateVersionId`, and `values`. Optional metadata includes `description`, `referenceNumber`, `fiscalYear`, `managingOfficeId`, and `changeNote`. Revise, finalize, and archive require `expectedRevision`. Finalize also requires a registered three-digit `fundCode` as a string. If publication or a concurrent edit made the caller's selection stale, the API returns `409`. Refresh the metadata and decide whether to resubmit. Lists return up to 50 rows. Archived documents retain their regular read rules. The legacy `voided` state also remains readable with its existing grant.
 
 Values are validated with the exact published schema pinned at creation. The API appends revisions while a document is draft. Finalization checks the pinned draft structure and freezes it. Finalized and archived documents are closed to further edits. This stage permits partial drafts and applies structural validation at finalization. Document-specific approval and completeness rules require separately approved business policy.
 
 ## Server-owned values
+
+Omit `serialNumber` from create and revise requests. Finalization allocates it and stores it both on the document identity and in the new immutable revision. The serial field on the identity is nullable for drafts and pre-policy documents. Earlier revisions retain their original saved values. See the [numbering policy and cutover](reference-data.md#document-numbering).
 
 Use `signatories` to supply an array of `{slotKey, signatoryId, date?}`. CAFOA slots are `official` and `signatory1` through `signatory3`. CAFOA allows an optional `YYYY-MM-DD` date. SAAOB slots are `preparedBy` and `certifiedBy`. RAAO has no signatory slots in its layout. The IDs refer to the separate signatory registry. A revision copies the registered display name and designation. Omit `signatories` on an edit to keep the previous snapshots, or supply a replacement array. `[]` clears the selections.
 

@@ -41,6 +41,10 @@ See [financial reporting and audit](docs/financial-reports.md) for dashboard fil
 
 See [container development and deployment](docs/containers.md) for Compose configuration, the reviewed migration command, and the offline PDF smoke test.
 
+See the [operator runbook](docs/operator-runbook.md) for the acceptance matrix and [API examples](docs/api-examples.md) for client integration.
+
+See [Magpet reference data and document numbering](docs/reference-data.md) for the maintenance seed command and the finalization contract.
+
 ## Contributing
 
 1. Create a feature branch.

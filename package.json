@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "templates": "node --import tsx src/templates/publish-cli.ts",
+    "seed:reference": "node --import tsx src/reference-data/seed-cli.ts",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test test/*.test.ts"
   },

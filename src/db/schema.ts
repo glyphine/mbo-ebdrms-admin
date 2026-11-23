@@ -39,6 +39,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import type { DocField, DocValue, DocValues, PdfOptions, RenderSnapshot } from "../templates/contracts.js";
 
 // ---------------------------------------------------------------------------
@@ -78,9 +79,24 @@ export const officesTable = pgTable("offices", {
   // Store municipal codes as strings, e.g. "1071", "1011 (1)", "5999".
   code: varchar("code", { length: 32 }).notNull().unique(),
   name: varchar("name", { length: 255 }).notNull(),
+  parentOfficeId: uuid("parent_office_id").references((): AnyPgColumn => officesTable.id),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
-});
+}, (t) => [
+  index("offices_parent_office_idx").on(t.parentOfficeId),
+  check("offices_parent_not_self", sql`${t.parentOfficeId} <> ${t.id}`),
+]);
+
+export const fundsTable = pgTable("funds", {
+  code: varchar("code", { length: 3 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+}, (t) => [check("funds_code_format", sql`${t.code} ~ '^[0-9]{3}$'`)]);
+
+export const expenditureClassificationsTable = pgTable("expenditure_classifications", {
+  code: varchar("code", { length: 8 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  kind: varchar("kind", { length: 8, enum: ['class', 'grouping'] }).notNull(),
+}, (t) => [check("expenditure_classifications_kind", sql`${t.kind} in ('class', 'grouping')`)]);
 
 export const usersTable = pgTable(
   "users",
@@ -334,6 +350,8 @@ export const documentsTable = pgTable(
     description: text("description"),
     referenceNumber: varchar("reference_number", { length: 100 }),
     fiscalYear: integer("fiscal_year"),
+    serialNumber: varchar("serial_number", { length: 14 }).unique(),
+    serialFundCode: varchar("serial_fund_code", { length: 3 }).references(() => fundsTable.code),
     // Current lifecycle state; keep in sync with the saved revisions.
     status: documentStatusEnum("status").default("draft").notNull(),
     createdAt: createdAt(),
@@ -344,10 +362,23 @@ export const documentsTable = pgTable(
     index("documents_created_by_idx").on(t.createdBy),
     index("documents_office_year_idx").on(t.managingOfficeId, t.fiscalYear),
     index("documents_status_idx").on(t.status),
+    index("documents_serial_fund_idx").on(t.serialFundCode).where(sql`${t.serialFundCode} is not null`),
+    check("documents_serial_format", sql`(${t.serialNumber} is null and ${t.serialFundCode} is null) or (
+      ${t.serialNumber} is not null and ${t.serialFundCode} is not null and
+      ${t.serialNumber} ~ '^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}-[0-9]{3}$' and
+      left(${t.serialNumber}, 4) <> '0000' and right(${t.serialNumber}, 3) = ${t.serialFundCode})`),
     index("documents_report_sources_idx").on(t.templateId, t.id)
       .where(sql`${t.status} in ('finalized', 'archived')`),
   ],
 );
+
+export const documentSerialCountersTable = pgTable("document_serial_counters", {
+  year: integer("year").primaryKey(),
+  lastValue: integer("last_value").notNull(),
+}, (t) => [
+  check("document_serial_counters_year", sql`${t.year} between 1 and 9999`),
+  check("document_serial_counters_range", sql`${t.lastValue} between 1 and 9999`),
+]);
 
 export const documentRevisionsTable = pgTable(
   "document_revisions",

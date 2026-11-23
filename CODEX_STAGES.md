@@ -50,6 +50,11 @@ Use these prompts **one stage at a time**, in order. Place `AGENTS.md` at the AP
 
 > Follow `AGENTS.md`. Perform a targeted end-to-end review of the API contract against the client integration needs and core E-BDRMS workflows. Add a short operator runbook and API examples: approve a device, log in, rotate tokens, create/revise CAFOA and RAAO and SAAOB, render/print a PDF, revoke a device, take/verify a backup. Include an acceptance matrix for **all six document types**, print fidelity/orientation, nested/blank rows, signatories, old revision/template reprints, denied remote assets, and Eta injection safety. Audit critical risks without broad refactors. Run available tests and report actual results/failures/blockers. Do not claim production readiness without verified restore, auth-revocation, and template-injection checks.
 
+## Prompt 13 — Fund code `101` follow-up
+
+- [ ] Confirm with the Municipal Budget Office what fund code `101` means in the RAAO workbooks and whether it is approved for new document issuance.
+- [ ] Record the approved decision in [Magpet reference data and document numbering](docs/reference-data.md). Keep existing `101` values intact and avoid aliasing them to `100`.
+
 ## How to use the prompts
 
 - Start a new Codex instruction with the next stage verbatim, or paste the stage section.

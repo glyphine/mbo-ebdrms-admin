@@ -3,10 +3,12 @@ import type { Database } from '../db/client.js';
 import { activityLogsTable, documentFinancialValuesTable, documentRevisionsTable, documentRevisionSignatoriesTable,
   documentsTable, documentTemplatesTable, documentTypesTable, officesTable, signatoriesTable, templateVersionsTable } from '../db/schema.js';
 import { hasGrant, permitsDocumentStatus, userGrants } from '../rbac/permissions.js';
+import { findOfficesByCodes } from '../reference-data/service.js';
 import { loadPublishedTemplateVersion } from '../templates/publication.js';
 import type { DocValues, TemplateCode } from '../templates/contracts.js';
 import { DocumentValidationError, validateDocumentValues } from '../templates/validation.js';
 import { deriveFinancialValues, projectFinancialValues, statementOfficeCodes } from './financials.js';
+import { allocateDocumentSerial, isFundCode } from './serials.js';
 
 type Db = Database['db'];
 type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];
@@ -19,7 +21,8 @@ export type CreateInput = DraftInput & { templateVersionId: string; title: strin
   managingOfficeId?: string | null; referenceNumber?: string | null; fiscalYear?: number | null };
 export type ChangeInput = { expectedRevision: number; changeNote?: string | null } & (
   | (DraftInput & { operation: 'revise' })
-  | { operation: 'finalize' | 'archive' }
+  | { operation: 'finalize'; fundCode: string }
+  | { operation: 'archive' }
 );
 
 export class DocumentError extends Error {
@@ -76,6 +79,7 @@ async function snapshotSignatories(tx: Tx, code: TemplateCode, inputs: Signatory
 async function prepareDraft(tx: Tx, template: Published, input: DraftInput, fiscalYear: number | null, baseRevisionId?: string) {
   const code = template.renderSnapshot.code;
   const values = validateDocumentValues(template.fieldSchema, input.values);
+  if (Object.hasOwn(values, 'serialNumber')) throw new DocumentValidationError('serialNumber is assigned on finalization');
   const keys = signatorySlots(code).flatMap((slot) => [`${slot}Name`, `${slot}Title`, `${slot}Date`]);
   if (keys.some((key) => Object.hasOwn(values, key))) throw new DocumentValidationError('Supply signatories using registry IDs and slot keys');
   const signatories = input.signatories === undefined && baseRevisionId
@@ -88,8 +92,7 @@ async function prepareDraft(tx: Tx, template: Published, input: DraftInput, fisc
   const aggregates = deriveFinancialValues(code, values);
   const validated = validateDocumentValues(template.fieldSchema, values);
   const officeCodes = code === 'SAAOB' ? statementOfficeCodes(validated) : [];
-  const offices = officeCodes.length ? await tx.select({ id: officesTable.id, code: officesTable.code }).from(officesTable)
-    .where(inArray(officesTable.code, officeCodes)) : [];
+  const offices = officeCodes.length ? await findOfficesByCodes(tx, officeCodes) : [];
   if (offices.length !== officeCodes.length) throw new DocumentValidationError('SAAOB office codes must exist in the office registry');
   const financial = projectFinancialValues(template.fieldSchema, validated, aggregates, new Map(offices.map(({ id, code }) => [code, id])))
     .map((value) => ({ ...value, fiscalYear }));
@@ -179,6 +182,7 @@ export async function changeDocument(db: Db, actor: string, documentId: string, 
 
     let revision = current;
     let status: Document['status'] = 'archived';
+    let serialAssignment: { serialNumber: string; serialFundCode: string } | undefined;
     if (input.operation !== 'archive') {
       if (current.revisionNumber === 2_147_483_647) throw new DocumentError(409, 'Revision limit reached');
       const draft = input.operation === 'revise' ? await prepareDraft(tx, template, input, document.fiscalYear, current.id) : {
@@ -188,11 +192,23 @@ export async function changeDocument(db: Db, actor: string, documentId: string, 
           .where(eq(documentFinancialValuesTable.revisionId, current.id)),
       };
       status = input.operation === 'revise' ? 'draft' : 'finalized';
+      if (input.operation === 'finalize') {
+        const { fundCode } = input;
+        const savedFund = draft.values['fund'];
+        if (record.code.startsWith('RAAO') && typeof savedFund === 'string' &&
+            isFundCode(savedFund.trim()) && savedFund.trim() !== fundCode) {
+          throw new DocumentValidationError('The fund code must match the numeric fund recorded on the RAAO draft');
+        }
+        const serialNumber = await allocateDocumentSerial(tx, fundCode);
+        if (!serialNumber) throw new DocumentError(409, 'Annual document serial sequence exhausted');
+        draft.values = validateDocumentValues(template.fieldSchema, { ...draft.values, serialNumber });
+        serialAssignment = { serialNumber, serialFundCode: fundCode };
+      }
       revision = await appendRevision(tx, { documentId: document.id, templateVersionId: template.id,
         revisionNumber: current.revisionNumber + 1, values: draft.values, status, createdBy: actor, changeNote: input.changeNote },
       draft.signatories, draft.financial);
     }
-    const [updated] = await tx.update(documentsTable).set({ status }).where(eq(documentsTable.id, document.id)).returning();
+    const [updated] = await tx.update(documentsTable).set({ status, ...serialAssignment }).where(eq(documentsTable.id, document.id)).returning();
     if (!updated) throw new Error('Document status update returned no row');
     const action = { revise: 'document.revised', finalize: 'document.finalized', archive: 'document.archived' }[input.operation];
     await audit(tx, actor, document.id, action, revision, input.changeNote);

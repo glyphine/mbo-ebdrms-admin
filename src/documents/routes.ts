@@ -6,6 +6,7 @@ import { sendPdfFailure } from '../pdf/http.js';
 import { PdfRenderError } from '../pdf/renderer.js';
 import { exportRevisionPdf } from '../pdf/service.js';
 import { DocumentValidationError } from '../templates/validation.js';
+import { fundCodePattern } from './serials.js';
 import { changeDocument, createDocument, DocumentError, listDocuments, listRevisions, readDocument, readRevision } from './service.js';
 import type { ChangeInput, CreateInput } from './service.js';
 
@@ -29,6 +30,7 @@ const signatories = {
 const documentParams = recordSchema({ documentId: uuid });
 const identity = recordSchema({ id: uuid, templateId: uuid, documentTypeId: uuid, documentTypeCode: text,
   createdBy: uuid, managingOfficeId: nullableUuid, title: text, description: nullableText, referenceNumber: nullableText,
+  serialNumber: nullableText,
   fiscalYear: { type: 'integer', nullable: true }, status: text, currentRevision: { ...revisionNumber, nullable: true },
   createdAt: text, updatedAt: text });
 const revision = recordSchema({ id: uuid, documentId: uuid, templateVersionId: uuid, revisionNumber,
@@ -130,11 +132,13 @@ export const documentRoutes: FastifyPluginAsync = async (app) => {
     { ...request.body, operation: 'revise' }), 201));
 
   for (const operation of ['finalize', 'archive'] as const) {
-    app.post<DocumentParams & { Body: TransitionBody }>(`/:documentId/${operation}`, {
+    app.post<DocumentParams & { Body: TransitionBody & { fundCode: string } }>(`/:documentId/${operation}`, {
       bodyLimit: 8192,
       schema: { summary: operation === 'finalize' ? 'Append a finalized revision' : 'Archive a finalized document',
         security: bearerSecurity, params: documentParams,
-        body: { ...recordSchema({ expectedRevision: revisionNumber, changeNote }), required: ['expectedRevision'] },
+        body: { ...recordSchema({ expectedRevision: revisionNumber, changeNote,
+          ...(operation === 'finalize' && { fundCode: { type: 'string', minLength: 3, maxLength: 3, pattern: fundCodePattern } }) }),
+          required: operation === 'finalize' ? ['expectedRevision', 'fundCode'] : ['expectedRevision'] },
         response: { 200: identity, ...failure } },
     }, (request, reply) => respond(reply, () => changeDocument(app.db, request.auth!.userId, request.params.documentId,
       { ...request.body, operation })));

@@ -4,10 +4,11 @@ import { test } from 'node:test';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 import { createApp } from '../src/app.js';
 import { authenticate } from '../src/auth/access.js';
+import { hashPassword } from '../src/auth/password.js';
 import { loadConfig } from '../src/config.js';
 import { createDatabase } from '../src/db/client.js';
-import { activityLogsTable, authSessionsTable, documentsTable, documentTemplatesTable, documentTypesTable,
-  officesTable, permissionsTable, roleDocumentTypePermissionsTable, rolePermissionsTable, rolesTable, userDevicesTable,
+import { activityLogsTable, authLogsTable, authSessionsTable, documentsTable, documentTemplatesTable, documentTypesTable,
+  officesTable, permissionsTable, refreshTokensTable, roleDocumentTypePermissionsTable, rolePermissionsTable, rolesTable, userDevicesTable,
   userRolesTable, usersTable } from '../src/db/schema.js';
 import { approveDevice, requestDeviceEnrollment } from '../src/devices/service.js';
 import { adminPermissions, authorizeDocument, authorizeDocumentType, documentPermissions, forbidden, hasGrant } from '../src/rbac/permissions.js';
@@ -44,6 +45,8 @@ test('admin routes and document guards apply live grants and session state', {
     return document ?? forbidden(reply);
   });
   const [adminId, editorId] = [randomUUID(), randomUUID()];
+  const credentials = { email: `${editorId}@example.test`, password: 'fixture-password' };
+  const passwordHash = await hashPassword(credentials.password);
   const [adminRole, editorRole] = [randomUUID(), randomUUID()];
   const [typeA, typeB] = [randomUUID(), randomUUID()];
   const [officeA, officeB] = [randomUUID(), randomUUID()];
@@ -57,6 +60,9 @@ test('admin routes and document guards apply live grants and session state', {
   t.after(async () => {
     try {
       await db.transaction(async (tx) => {
+        const sessions = tx.select({ id: authSessionsTable.id }).from(authSessionsTable).where(inArray(authSessionsTable.userId, userIds));
+        await tx.delete(refreshTokensTable).where(inArray(refreshTokensTable.sessionId, sessions));
+        await tx.delete(authLogsTable).where(inArray(authLogsTable.userId, userIds));
         await tx.delete(activityLogsTable).where(inArray(activityLogsTable.actorUserId, userIds));
         await tx.delete(authSessionsTable).where(inArray(authSessionsTable.userId, userIds));
         await tx.delete(userDevicesTable).where(inArray(userDevicesTable.userId, userIds));
@@ -76,7 +82,7 @@ test('admin routes and document guards apply live grants and session state', {
   await db.transaction(async (tx) => {
     await tx.insert(officesTable).values([officeA, officeB].map((id) => ({ id, code: id.slice(0, 24), name: 'Test office' })));
     await tx.insert(usersTable).values(userIds.map((id) => ({ id, email: `${id}@example.test`, fullName: 'RBAC fixture',
-      officeId: officeA, passwordHash: 'fixture-only' })));
+      officeId: officeA, passwordHash })));
     await tx.insert(rolesTable).values(roleIds.map((id) => ({ id, name: `rbac-fixture-${id}` })));
     const created = await tx.insert(permissionsTable).values(permissionNames.map((name) => ({ name })))
       .onConflictDoNothing().returning({ id: permissionsTable.id });
@@ -112,7 +118,12 @@ test('admin routes and document guards apply live grants and session state', {
   for (const { userId, deviceId } of [{ userId: adminId, ...admin }, { userId: editorId, ...editor }]) {
     assert.equal(await approveDevice(db, adminId, { userId, deviceId }), true);
   }
-  const pending = await requestDeviceEnrollment(db, editorId, 'Pending installation');
+  const authPost = (route: string, payload: object) => app.inject({ method: 'POST', url: `/api/v1/auth/${route}`, payload });
+  const enrolled = await authPost('enroll', { ...credentials, label: 'Pending installation' });
+  assert.equal(enrolled.statusCode, 201);
+  const proof = enrolled.json<{ deviceId: string; deviceCredential: string; status: string }>();
+  assert.equal(proof.status, 'pending');
+  const pending = { deviceId: proof.deviceId, deviceCredential: proof.deviceCredential };
   const adminToken = await makeSession(adminId, admin.deviceId);
   const editorToken = await makeSession(editorId, editor.deviceId);
   const adminApi = '/api/v1/admin';
@@ -125,6 +136,7 @@ test('admin routes and document guards apply live grants and session state', {
   const scopedGrant = (roleId: string, typeId: string, permission: string) => `/roles/${roleId}/document-types/${typeId}/permissions/${permission}`;
 
   await t.test('anonymous and ordinary sessions cannot administer devices, users or grants', async () => {
+    assert.equal((await authPost('login', { ...credentials, ...pending })).statusCode, 401);
     assert.equal((await call('GET', '/roles')).statusCode, 401);
     assert.equal((await call('GET', '/devices/pending', editorToken)).statusCode, 403);
     assert.equal((await call('POST', `/devices/${pending.deviceId}/approve`, editorToken)).statusCode, 403);
@@ -135,7 +147,7 @@ test('admin routes and document guards apply live grants and session state', {
     const users = await call('GET', '/users', adminToken);
     assert.equal(users.statusCode, 200);
     assert.ok(users.json().some(({ id }: { id: string }) => id === editorId));
-    assert.doesNotMatch(users.body, /passwordHash|fixture-only/);
+    assert.doesNotMatch(users.body, /passwordHash|scrypt-v1/);
     const queue = await call('GET', '/devices/pending', adminToken);
     assert.equal(queue.statusCode, 200);
     assert.ok(queue.json().some(({ id }: { id: string }) => id === pending.deviceId));
@@ -193,8 +205,24 @@ test('admin routes and document guards apply live grants and session state', {
     assert.equal((await call('GET', '/roles', activeToken)).statusCode, 401);
     assert.equal((await call('GET', '/roles', lingeringToken)).statusCode, 401);
 
+    const signedIn = await authPost('login', { ...credentials, ...pending });
+    assert.equal(signedIn.statusCode, 200);
+    const initial = signedIn.json<{ refreshToken: string }>();
+    const rotation = await authPost('refresh', { ...pending, refreshToken: initial.refreshToken });
+    assert.equal(rotation.statusCode, 200);
+    const rotated = rotation.json<{ accessToken: string; refreshToken: string }>();
+    assert.notEqual(rotated.refreshToken, initial.refreshToken);
+    const me = () => app.inject({ url: '/api/v1/auth/me', headers: { authorization: `Bearer ${rotated.accessToken}` } });
+    const session = await me();
+    assert.equal(session.statusCode, 200);
+    assert.equal(session.json().deviceId, pending.deviceId);
+    assert.equal((await call('POST', `/devices/${pending.deviceId}/revoke`, adminToken)).statusCode, 204);
+    assert.equal((await me()).statusCode, 401);
+    assert.equal((await authPost('refresh', { ...pending, refreshToken: rotated.refreshToken })).statusCode, 401);
+
     const audit = await db.select().from(activityLogsTable).where(eq(activityLogsTable.actorUserId, adminId));
     assert.equal(audit.filter(({ entityId, action }) => entityId === pending.deviceId && action === 'device.approved').length, 1);
+    assert.equal(audit.filter(({ entityId, action }) => entityId === pending.deviceId && action === 'device.revoked').length, 1);
     assert.equal(audit.filter(({ action }) => action === 'rbac.role_assigned').length, 1);
     assert.ok(audit.some(({ action, metadata }) => action === 'rbac.role_removed' && metadata?.['roleId'] === editorRole));
     assert.ok(audit.some(({ action, metadata }) => action === 'rbac.permission_granted' && metadata?.['documentTypeId'] === typeA));
