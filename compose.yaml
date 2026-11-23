@@ -1,0 +1,68 @@
+services:
+  api:
+    image: ${EBDRMS_API_IMAGE:-mbo-ebdrms-api:local}
+    build: .
+    env_file:
+      - path: ${EBDRMS_API_ENV_FILE:-.env.compose.api}
+        format: raw
+    environment:
+      NODE_ENV: ${EBDRMS_NODE_ENV:-production}
+      HOST: 0.0.0.0
+      PORT: "3000"
+    ports:
+      - "${EBDRMS_API_BIND:-127.0.0.1}:${EBDRMS_API_PORT:-3000}:3000"
+    init: true
+    shm_size: 256m
+    security_opt:
+      - no-new-privileges:true
+      - seccomp:./docker/chromium-seccomp.json
+    cap_drop: [ALL]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/health/ready').then(r => { if (!r.ok) process.exitCode = 1 }).catch(() => { process.exitCode = 1 })"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks: [edge, backend]
+
+  db:
+    image: postgres:18.6-bookworm@sha256:f1ea2a1a4fb7b68d4836be1fdcb8a6466a89b072158bf9d97663600538c294c5
+    user: postgres
+    env_file:
+      - path: ${EBDRMS_DB_ENV_FILE:-.env.compose.db}
+        format: raw
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks: [backend]
+
+  migrate:
+    image: ${EBDRMS_API_IMAGE:-mbo-ebdrms-api:local}
+    profiles: [maintenance]
+    env_file:
+      - path: ${EBDRMS_MAINTENANCE_ENV_FILE:-.env.compose.maintenance}
+        format: raw
+    command: [node, dist/db/migrate.js]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [backend]
+
+networks:
+  edge:
+  backend:
+    internal: true
+
+volumes:
+  postgres-data:

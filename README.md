@@ -39,6 +39,8 @@ See [PDF export](docs/pdf-export.md) for Chromium setup and the optional PDF int
 
 See [financial reporting and audit](docs/financial-reports.md) for dashboard filters, private snapshot exports, and audit retrieval.
 
+See [container development and deployment](docs/containers.md) for Compose configuration, the reviewed migration command, and the offline PDF smoke test.
+
 ## Contributing
 
 1. Create a feature branch.
