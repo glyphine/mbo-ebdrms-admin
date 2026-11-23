@@ -53,7 +53,7 @@ export async function publishTemplate(db: PublicationDatabase, code: TemplateCod
 export async function loadPublishedTemplateVersion(db: Pick<PublicationDatabase, 'select'>, versionId: string) {
   const [version] = await db.select().from(templateVersionsTable).where(eq(templateVersionsTable.id, versionId));
   if (!version?.renderSnapshot || !version.contentDigest) return undefined;
-  const content = { ...version, renderSnapshot: version.renderSnapshot };
+  const content = { ...version, renderSnapshot: version.renderSnapshot, contentDigest: version.contentDigest };
   if (content.renderSnapshot.format !== 1 || snapshotDigest(content) !== version.contentDigest) {
     throw new Error('Stored template snapshot failed integrity verification');
   }

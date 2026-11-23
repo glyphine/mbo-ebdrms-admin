@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { appendFile, cp, mkdtemp, rm } from 'node:fs/promises';
+import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
@@ -20,6 +20,7 @@ import { publishTemplate } from '../src/templates/publication.js';
 import { documentRegistry } from '../src/templates/registry.js';
 import { readPublication, snapshotDigest } from '../src/templates/snapshot.js';
 import { validateDocumentValues } from '../src/templates/validation.js';
+import { readPdf, runChromiumTests } from './helpers/pdf.js';
 
 test('financial derivation preserves print rows and uses exact cents', () => {
   const cafoa = documentRegistry.CAFOA.fields;
@@ -82,7 +83,7 @@ test('document API preserves authorized, pinned history across edits, finalizati
   const original = await publish('SAAOB');
   const cafoa = await publish('CAFOA');
   const raao = await publish('RAAOPS');
-  const actions = ['documents.create', 'documents.read', 'documents.revise', 'documents.finalize', 'documents.archive'];
+  const actions = ['documents.create', 'documents.read', 'documents.revise', 'documents.finalize', 'documents.archive', 'documents.export'];
   const permissions = await db.insert(permissionsTable).values(actions.map((name) => ({ name }))).returning();
   async function grant(userId: string, templateIds: string[], names: string[]) {
     const [role] = await db.insert(rolesTable).values({ name: userId }).returning();
@@ -95,7 +96,7 @@ test('document API preserves authorized, pinned history across edits, finalizati
         .map(({ id }) => ({ roleId: role.id, documentTypeId: template.documentTypeId, permissionId: id })));
     }
   }
-  await grant(writer, [original.templateId, cafoa.templateId, raao.templateId], actions.slice(0, 3));
+  await grant(writer, [original.templateId, cafoa.templateId, raao.templateId], [...actions.slice(0, 3), 'documents.export']);
   await grant(reviewer, [original.templateId], ['documents.read', 'documents.finalize', 'documents.archive']);
 
   async function access(userId: string) {
@@ -167,7 +168,8 @@ test('document API preserves authorized, pinned history across edits, finalizati
   const directory = await mkdtemp(join(tmpdir(), 'ebdrms-revision-'));
   t.after(() => rm(directory, { recursive: true }));
   await cp(fileURLToPath(new URL('../templates/', import.meta.url)), directory, { recursive: true });
-  await appendFile(join(directory, 'saaob.eta'), '\n<!-- new reviewed layout -->\n');
+  const layoutPath = join(directory, 'saaob.eta');
+  await writeFile(layoutPath, (await readFile(layoutPath, 'utf8')).replace('</header>', '<p>New reviewed print edition</p></header>'));
   const newer = await publish('SAAOB', directory);
   assert.notEqual(newer.id, original.id);
   assert.equal((await post('', input)).statusCode, 409);
@@ -200,6 +202,29 @@ test('document API preserves authorized, pinned history across edits, finalizati
 
   const audits = await db.select().from(activityLogsTable).where(eq(activityLogsTable.entityId, id));
   assert.deepEqual(audits.map(({ action }) => action).sort(), ['document.archived', 'document.created', 'document.finalized', 'document.revised']);
+  const originalExport = `/${id}/revisions/1/pdf`;
+  assert.equal((await get(originalExport, reviewerToken)).statusCode, 403);
+  assert.equal((await get(originalExport, outsiderToken)).statusCode, 404);
+  if (runChromiumTests) {
+    const pdf = await get(originalExport);
+    assert.equal(pdf.statusCode, 200, pdf.body.slice(0, 100));
+    assert.equal(pdf.headers['content-type'], 'application/pdf');
+    assert.equal(pdf.headers['cache-control'], 'private, no-store');
+    assert.equal(pdf.headers['x-content-type-options'], 'nosniff');
+    assert.equal(pdf.headers['content-disposition'], `attachment; filename="SAAOB-${id}-r1.pdf"`);
+    const oldText = readPdf('pdftotext', ['-', '-'], pdf.rawPayload);
+    assert.doesNotMatch(oldText, /New reviewed print edition/);
+    assert.match(oldText, /ORIGINAL NAME/);
+    const newDocument = await post('', { templateVersionId: newer.id, title: 'New document', values });
+    assert.equal(newDocument.statusCode, 201);
+    const newPdf = await get(`/${newDocument.json().id}/revisions/1/pdf`);
+    assert.equal(newPdf.statusCode, 200);
+    assert.match(readPdf('pdftotext', ['-', '-'], newPdf.rawPayload), /New reviewed print edition/);
+    const events = await db.select().from(activityLogsTable).where(and(eq(activityLogsTable.entityId, id),
+      eq(activityLogsTable.action, 'document.pdf_exported')));
+    assert.equal(events.length, 1);
+    assert.equal(events[0]?.metadata?.['templateVersionId'], original.id);
+  }
   const immutable = (error: unknown) => error instanceof Error && (error.cause as { code?: string })?.code === '55000';
   await assert.rejects(db.update(documentRevisionsTable).set({ values: {} }).where(eq(documentRevisionsTable.id, originalRevisionId)), immutable);
   await assert.rejects(db.delete(documentRevisionSignatoriesTable).where(eq(documentRevisionSignatoriesTable.revisionId, originalRevisionId)), immutable);
@@ -211,8 +236,8 @@ test('document API preserves authorized, pinned history across edits, finalizati
   const interrupted = await post('', { templateVersionId: raao.id, title: 'Interrupted write',
     values: { actualRows: [{ details: ['1.00'] }] } });
   assert.equal(interrupted.statusCode, 500);
-  assert.equal((await db.select().from(documentRevisionsTable)).length, 5);
+  assert.equal((await db.select().from(documentRevisionsTable)).length, runChromiumTests ? 6 : 5);
   const afterFailure = await db.select({ id: documentFinancialValuesTable.id }).from(documentFinancialValuesTable);
   assert.deepEqual(afterFailure.map(({ id }) => id).sort(), beforeFailure.map(({ id }) => id).sort());
-  assert.equal((await db.select().from(documentsTable)).length, 3);
+  assert.equal((await db.select().from(documentsTable)).length, runChromiumTests ? 4 : 3);
 });

@@ -2,6 +2,8 @@ import type { FastifyPluginAsync, FastifyReply } from 'fastify';
 import { authenticate } from '../auth/access.js';
 import { errorSchema, sendError } from '../http/errors.js';
 import { bearerSecurity, recordSchema, uuid } from '../http/schemas.js';
+import { PdfRenderError, PdfRenderer } from '../pdf/renderer.js';
+import { exportRevisionPdf } from '../pdf/service.js';
 import { DocumentValidationError } from '../templates/validation.js';
 import { changeDocument, createDocument, DocumentError, listDocuments, listRevisions, readDocument, readRevision } from './service.js';
 import type { ChangeInput, CreateInput } from './service.js';
@@ -40,8 +42,17 @@ type TransitionBody = { expectedRevision: number; changeNote?: string | null };
 
 async function respond(reply: FastifyReply, work: () => Promise<unknown>, status = 200) {
   try {
-    return reply.code(status).send(await work());
+    const body = await work();
+    return reply.code(status).send(body);
   } catch (error) {
+    if (error instanceof PdfRenderError) {
+      switch (error.kind) {
+        case 'busy': return sendError(reply.header('Retry-After', '1'), 503, 'PDF_BUSY', 'PDF renderer is at capacity');
+        case 'timeout': return sendError(reply, 504, 'PDF_TIMEOUT', 'PDF rendering timed out');
+        case 'limit': return sendError(reply, 422, 'PDF_LIMIT', 'Document exceeds PDF limits');
+        case 'render': throw error;
+      }
+    }
     if (error instanceof DocumentValidationError) return sendError(reply, 400, 'VALIDATION_ERROR', error.message);
     if (error instanceof DocumentError) {
       const code = { 403: 'FORBIDDEN', 404: 'NOT_FOUND', 409: 'CONFLICT' }[error.status];
@@ -52,6 +63,8 @@ async function respond(reply: FastifyReply, work: () => Promise<unknown>, status
 }
 
 export const documentRoutes: FastifyPluginAsync = async (app) => {
+  const renderer = new PdfRenderer();
+  app.addHook('onClose', () => renderer.close());
   app.addHook('preHandler', authenticate);
   app.addHook('onRequest', async (_request, reply) => { reply.header('Cache-Control', 'private, no-store'); });
 
@@ -92,6 +105,28 @@ export const documentRoutes: FastifyPluginAsync = async (app) => {
     const number = Number(request.params.revisionNumber);
     if (number > maxRevision) return sendError(reply, 400, 'VALIDATION_ERROR', 'Revision number is out of range');
     return respond(reply, () => readRevision(app.db, request.auth!.userId, request.params.documentId, number));
+  });
+
+  app.get<{ Params: { documentId: string; revisionNumber: string } }>('/:documentId/revisions/:revisionNumber/pdf', {
+    exposeHeadRoute: false,
+    schema: { summary: 'Download a PDF of an exact immutable revision', security: bearerSecurity,
+      params: recordSchema({ documentId: uuid, revisionNumber: numberParam }),
+      response: { 200: { content: { 'application/pdf': { schema: { type: 'string', format: 'binary' } } } },
+        ...failure, 422: errorSchema, 503: errorSchema, 504: errorSchema } },
+  }, (request, reply) => {
+    const number = Number(request.params.revisionNumber);
+    if (number > maxRevision) return sendError(reply, 400, 'VALIDATION_ERROR', 'Revision number is out of range');
+    return respond(reply, async () => {
+      try {
+        const { pdf, filename } = await exportRevisionPdf(app.db, renderer, request.auth!.userId, request.params.documentId, number);
+        reply.type('application/pdf').header('Content-Disposition', `attachment; filename="${filename}"`)
+          .header('X-Content-Type-Options', 'nosniff');
+        return pdf;
+      } catch (error) {
+        if (error instanceof DocumentValidationError) throw new PdfRenderError('render', { cause: error });
+        throw error;
+      }
+    });
   });
 
   app.post<DocumentParams & { Body: RevisionBody }>('/:documentId/revisions', {

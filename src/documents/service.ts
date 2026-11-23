@@ -238,12 +238,17 @@ export async function listRevisions(db: Db, actor: string, documentId: string, a
     .orderBy(asc(documentRevisionsTable.revisionNumber)).limit(50);
 }
 
-export async function readRevision(db: Db, actor: string, documentId: string, number: number) {
-  const document = await readDocument(db, actor, documentId);
+export async function findDocumentRevision(db: Db, document: { id: string; templateId: string }, number: number) {
   const [revision] = await db.select({ ...revisionMetadata, values: documentRevisionsTable.values }).from(documentRevisionsTable)
     .innerJoin(templateVersionsTable, eq(templateVersionsTable.id, documentRevisionsTable.templateVersionId))
     .where(and(eq(documentRevisionsTable.documentId, document.id), eq(documentRevisionsTable.revisionNumber, number),
       eq(templateVersionsTable.templateId, document.templateId)));
   if (!revision) throw new DocumentError(404, 'Revision not found');
+  return revision;
+}
+
+export async function readRevision(db: Db, actor: string, documentId: string, number: number) {
+  const document = await readDocument(db, actor, documentId);
+  const revision = await findDocumentRevision(db, document, number);
   return { ...revision, signatories: await revisionSignatories(db, revision.id) };
 }

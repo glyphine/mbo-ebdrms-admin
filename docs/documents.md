@@ -9,6 +9,7 @@ Every route under `/api/v1/documents` requires an active bearer session and the 
 | `GET /:documentId` | `documents.read` | Returns identity metadata and the current revision number. |
 | `GET /:documentId/revisions` | `documents.read` | Lists revision metadata. Use `?after=<revisionNumber>` for the next page. |
 | `GET /:documentId/revisions/:revisionNumber` | `documents.read` | Returns the exact revision, its values, signatory snapshots, and `templateVersionId`. |
+| `GET /:documentId/revisions/:revisionNumber/pdf` | `documents.read`, `documents.export` | Downloads the exact revision using its pinned snapshot. See the [PDF export contract](pdf-export.md). |
 | `POST /:documentId/revisions` | `documents.revise` | Appends a draft from replacement `values`. |
 | `POST /:documentId/finalize` | `documents.finalize` | Appends a finalized revision from the current draft, including its saved signatories and financial projections. |
 | `POST /:documentId/archive` | `documents.archive` | Archives a finalized document and keeps its finalized revision as the head. |

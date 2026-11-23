@@ -35,6 +35,8 @@ See [trusted template publication](docs/template-publication.md) for the reviewe
 
 See [documents and revision history](docs/documents.md) for document routes, lifecycle rules, and structured values.
 
+See [PDF export](docs/pdf-export.md) for Chromium setup and the optional PDF integration suite.
+
 ## Contributing
 
 1. Create a feature branch.
