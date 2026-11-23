@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly E-BDRMS disposable restore check
+
+[Timer]
+OnCalendar=Sun *-*-* 05:00:00 UTC
+Persistent=true
+Unit=ebdrms-backup@test-latest.service
+
+[Install]
+WantedBy=timers.target

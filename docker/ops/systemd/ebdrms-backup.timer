@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily E-BDRMS PostgreSQL and release backup
+
+[Timer]
+OnCalendar=*-*-* 02:00:00 UTC
+Persistent=true
+Unit=ebdrms-backup@create.service
+
+[Install]
+WantedBy=timers.target

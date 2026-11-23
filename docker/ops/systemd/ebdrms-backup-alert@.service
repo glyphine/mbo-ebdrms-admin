@@ -1,0 +1,11 @@
+[Unit]
+Description=Report failed E-BDRMS backup operation (%i)
+
+[Service]
+Type=oneshot
+User=ebdrms-ops
+EnvironmentFile=-/etc/ebdrms/operations.env
+ExecStart=/opt/ebdrms/docker/ops/report-failure.sh %i
+UMask=0077
+NoNewPrivileges=true
+TimeoutStartSec=60s

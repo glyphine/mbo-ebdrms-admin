@@ -1,5 +1,7 @@
 # Container development and deployment
 
+See the [backup and recovery runbook](recovery.md) for scheduled backups, disposable restore tests, guarded releases, and application-image rollback.
+
 The multi-stage image builds the TypeScript API with the pinned pnpm version and frozen lockfile, then installs production dependencies separately. The final image runs as Node's `node` user. The Node and PostgreSQL bases are pinned by digest. Playwright installs its locked Chromium headless shell and the corresponding Debian runtime libraries and system fonts during build. Debian packages come from the Bookworm repositories at build time. Promote the built API image by digest when deploying the same runtime across environments.
 
 The image contains the reviewed Eta sources, print CSS, and vetted municipal logo under `/app/templates`, plus the reviewed migrations. The forms use the container's system fonts. Historical immutable template snapshots and their embedded assets live in PostgreSQL. The renderer compiles Tailwind locally from those inputs or from the packaged reporting template.

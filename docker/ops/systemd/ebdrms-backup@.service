@@ -1,0 +1,16 @@
+[Unit]
+Description=E-BDRMS PostgreSQL backup operation (%i)
+After=docker.service
+Requires=docker.service
+OnFailure=ebdrms-backup-alert@%i.service
+
+[Service]
+Type=oneshot
+User=ebdrms-ops
+SupplementaryGroups=docker
+EnvironmentFile=/etc/ebdrms/operations.env
+WorkingDirectory=/opt/ebdrms
+ExecStart=/opt/ebdrms/docker/ops/backup.sh %i
+UMask=0077
+NoNewPrivileges=true
+TimeoutStartSec=2h
