@@ -13,19 +13,24 @@ export type Grant = { name: string; documentTypeId: string | null };
 export const adminPermissions = ['devices.manage', 'users.manage', 'roles.manage'] as const;
 export type AdminPermission = typeof adminPermissions[number];
 export const documentPermissions = [
-  'documents.create', 'documents.read', 'documents.revise', 'documents.finalize', 'documents.void', 'documents.export',
+  'documents.create', 'documents.read', 'documents.revise', 'documents.finalize', 'documents.void', 'documents.export', 'documents.archive',
 ] as const;
 export type DocumentPermission = typeof documentPermissions[number];
-type RecordPermission = Exclude<DocumentPermission, 'documents.create'>;
+export type RecordPermission = Exclude<DocumentPermission, 'documents.create'>;
 type DocumentStatus = typeof documentsTable.$inferSelect.status;
 
 const permittedStatuses: Record<RecordPermission, readonly DocumentStatus[]> = {
-  'documents.read': ['draft', 'finalized', 'voided'],
+  'documents.read': ['draft', 'finalized', 'voided', 'archived'],
   'documents.revise': ['draft'],
   'documents.finalize': ['draft'],
   'documents.void': ['finalized'],
-  'documents.export': ['draft', 'finalized'],
+  'documents.export': ['draft', 'finalized', 'archived'],
+  'documents.archive': ['finalized'],
 };
+
+export function permitsDocumentStatus(permission: RecordPermission, status: DocumentStatus) {
+  return permittedStatuses[permission]?.includes(status) ?? false;
+}
 
 function readGrants(db: PermissionDatabase, globalRoles: SQL, scopedRoles: SQL) {
   // Drizzle wraps the union in a SELECT. Alias the NULL so that wrapper reads the actual scope column.
@@ -84,6 +89,6 @@ export async function authorizeDocument(db: PermissionDatabase, userId: string, 
     documentTypeId: documentTemplatesTable.documentTypeId,
   }).from(documentsTable).innerJoin(documentTemplatesTable, eq(documentTemplatesTable.id, documentsTable.templateId))
     .where(eq(documentsTable.id, documentId));
-  if (!record || !permittedStatuses[permission]?.includes(record.status)) return undefined;
+  if (!record || !permitsDocumentStatus(permission, record.status)) return undefined;
   return hasGrant(await userGrants(db, userId), permission, record.documentTypeId) ? record : undefined;
 }

@@ -9,10 +9,11 @@ Use `requirePermission` after `authenticate` for routes that need a global grant
 | Permission | Eligible status |
 | --- | --- |
 | `documents.create` | Active document type |
-| `documents.read` | Draft, finalized, or voided |
+| `documents.read` | Draft, finalized, voided, or archived |
 | `documents.revise`, `documents.finalize` | Draft |
 | `documents.void` | Finalized |
-| `documents.export` | Draft or finalized |
+| `documents.export` | Draft, finalized, or archived |
+| `documents.archive` | Finalized |
 
 Existing records remain subject to their grants when a type is retired. Lifecycle and PDF routes can add their own revision-specific requirements.
 

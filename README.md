@@ -33,6 +33,8 @@ See [device enrollment and session persistence](docs/device-enrollment.md) for t
 
 See [trusted template publication](docs/template-publication.md) for the reviewed publication command and template metadata API.
 
+See [documents and revision history](docs/documents.md) for document routes, lifecycle rules, and structured values.
+
 ## Contributing
 
 1. Create a feature branch.

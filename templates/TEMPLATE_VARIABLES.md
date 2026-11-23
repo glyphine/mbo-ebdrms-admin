@@ -70,4 +70,4 @@ Both arrays accept row objects and `null` entries for blank rows. Each missing o
 | `offices[].categories[]`           | `name`, `entries` (array), `totals` (category total).                     |
 | `offices[].categories[].entries[]` | `name` (entry label), `accountCode`, and the five financial fields below. |
 
-Financial fields shared by entries, `totals`, and `grandTotals` are `appropriations`, `allotment`, `appropriationBalance`, `obligation`, and `balance`. Provide the calculated totals at each level. Missing totals render blank cells. Missing or null group and entry arrays render no rows for that array.
+Financial fields shared by entries, `totals`, and `grandTotals` are `appropriations`, `allotment`, `appropriationBalance`, `obligation`, and `balance`. The document service derives the two balances and calculates totals at each level before saving a revision. Missing totals render blank cells. Missing or null group and entry arrays render no rows for that array.

@@ -61,6 +61,7 @@ export const documentStatusEnum = pgEnum("document_status", [
   "draft",
   "finalized",
   "voided",
+  "archived",
 ]);
 
 export const documentRevisionStatusEnum = pgEnum("document_revision_status", [
